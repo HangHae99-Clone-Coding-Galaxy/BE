@@ -26,6 +26,15 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
+### database file ###
+
+mini.mv.db
+mini.lock.db
+
+### applicationm.properties ###
+
+src/main/resources/application.properties
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
