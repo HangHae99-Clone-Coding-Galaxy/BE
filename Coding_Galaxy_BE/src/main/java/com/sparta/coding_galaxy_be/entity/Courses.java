@@ -1,5 +1,6 @@
 package com.sparta.coding_galaxy_be.entity;
 
+import com.sparta.coding_galaxy_be.util.TimeStamped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,7 +14,7 @@ import java.util.List;
 @Entity(name = "course")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Courses {
+public class Courses extends TimeStamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

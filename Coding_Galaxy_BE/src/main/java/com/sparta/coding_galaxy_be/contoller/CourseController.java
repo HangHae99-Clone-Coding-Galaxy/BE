@@ -7,11 +7,10 @@ import com.sparta.coding_galaxy_be.service.CourseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
-@Controller
+@RestController
 @RequestMapping("/api/course")
 @RequiredArgsConstructor
 public class CourseController {
