@@ -9,20 +9,20 @@ import java.util.Collection;
 
 public class KakaoMemberDetailsImpl implements UserDetails {
 
-    private final KakaoMembers kakaoMembers;
+    private final KakaoMembers kakaoMember;
 
-    public KakaoMemberDetailsImpl(KakaoMembers kakaoMembers){
-        this.kakaoMembers = kakaoMembers;
+    public KakaoMemberDetailsImpl(KakaoMembers kakaoMember){
+        this.kakaoMember = kakaoMember;
     }
 
-    public KakaoMembers getKakaoMembers(){
-        return kakaoMembers;
+    public KakaoMembers getKakaoMember(){
+        return kakaoMember;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
-        Authority authority = kakaoMembers.getAuthority();
+        Authority authority = kakaoMember.getAuthority();
 
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(authority.toString());
 
@@ -34,12 +34,12 @@ public class KakaoMemberDetailsImpl implements UserDetails {
 
     @Override
     public String getPassword() {
-        return kakaoMembers.getPassword();
+        return kakaoMember.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return kakaoMembers.getNickname();
+        return kakaoMember.getNickname();
     }
 
     @Override

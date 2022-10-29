@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface KakaoMemberRepository extends JpaRepository<KakaoMembers, Long> {
+public interface KakaoMembersRepository extends JpaRepository<KakaoMembers, Long> {
 
-    Optional<KakaoMembers> findByNickname(String nickname);
+    Optional<KakaoMembers> findByKakaoMemberId(Long kakaoMemberId);
 }
