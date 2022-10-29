@@ -1,5 +1,7 @@
 package com.sparta.coding_galaxy_be.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
@@ -7,7 +9,9 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class RefreshToken {
 
     @Id

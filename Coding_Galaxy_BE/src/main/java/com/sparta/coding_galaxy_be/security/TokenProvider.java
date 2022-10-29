@@ -76,9 +76,9 @@ public class TokenProvider {
 
         Assert.notNull(claims.get(AUTHORITIES_KEY), "권한 정보가 없는 토큰입니다.");
 
-        String nickname = claims.getSubject();
-        KakaoMembers kakaoMember = kakaoMembersRepository.findByKakaoMemberId(kaka).orElseThrow(
-                () -> new UsernameNotFoundException(nickname + "을(를) 찾을 수 없습니다.")
+        String name = claims.getSubject();
+        KakaoMembers kakaoMember = kakaoMembersRepository.findByName(name).orElseThrow(
+                () -> new UsernameNotFoundException("유저를 찾을 수 없습니다.")
         );
 
         KakaoMemberDetailsImpl kakaoMemberDetails = new KakaoMemberDetailsImpl(kakaoMember);

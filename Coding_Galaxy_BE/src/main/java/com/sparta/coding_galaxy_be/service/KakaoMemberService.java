@@ -6,9 +6,13 @@ import com.sparta.coding_galaxy_be.dto.TokenDto;
 import com.sparta.coding_galaxy_be.entity.Authority;
 import com.sparta.coding_galaxy_be.entity.KakaoMemberDetailsImpl;
 import com.sparta.coding_galaxy_be.entity.KakaoMembers;
+import com.sparta.coding_galaxy_be.entity.RefreshToken;
 import com.sparta.coding_galaxy_be.repository.KakaoMembersRepository;
+import com.sparta.coding_galaxy_be.repository.RefreshTokenRepository;
+import com.sparta.coding_galaxy_be.security.JwtAuthFilter;
 import com.sparta.coding_galaxy_be.security.TokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,6 +32,7 @@ public class KakaoMemberService {
     private final TokenProvider tokenProvider;
     private final PasswordEncoder passwordEncoder;
     private final KakaoOauth kakaoOauth;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public ResponseEntity<?> kakaoLogin(String code, HttpServletResponse httpServletResponse) throws JsonProcessingException {
 
@@ -42,6 +47,7 @@ public class KakaoMemberService {
             kakaoMember = KakaoMembers.builder()
                     .kakaoMemberId(kakaoMemberInformationDto.getKakaoMemberId())
                     .email(kakaoMemberInformationDto.getEmail())
+                    .name("KAKAO" + UUID.randomUUID())
                     .nickname(kakaoMemberInformationDto.getNickname())
                     .password(passwordEncoder.encode(UUID.randomUUID().toString()))
                     .authority(Authority.ROLE_MEMBER)
@@ -56,5 +62,16 @@ public class KakaoMemberService {
 
         TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
 
+        RefreshToken refreshToken = RefreshToken.builder()
+                .key(authentication.getName())
+                .value(tokenDto.getRefreshToken())
+                .build();
+
+        refreshTokenRepository.save(refreshToken);
+
+        httpServletResponse.setHeader(JwtAuthFilter.AUTHORIZATION_HEADER, JwtAuthFilter.BEARER_PREFIX + tokenDto.getAccessToken());
+        httpServletResponse.setHeader("RefreshToken", tokenDto.getRefreshToken());
+
+        return new ResponseEntity<>("로그인 성공", HttpStatus.OK);
     }
 }
