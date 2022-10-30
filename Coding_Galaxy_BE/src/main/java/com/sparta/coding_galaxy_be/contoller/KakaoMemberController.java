@@ -20,5 +20,4 @@ public class KakaoMemberController {
     public ResponseEntity<?> kakaoLogin(@RequestParam String code, HttpServletResponse httpServletResponse) throws JsonProcessingException{
         return kakaoMemberService.kakaoLogin(code, httpServletResponse);
     }
-
 }

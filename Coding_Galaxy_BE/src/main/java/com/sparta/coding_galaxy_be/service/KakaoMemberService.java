@@ -71,6 +71,9 @@ public class KakaoMemberService {
 
         httpServletResponse.setHeader(JwtAuthFilter.AUTHORIZATION_HEADER, JwtAuthFilter.BEARER_PREFIX + tokenDto.getAccessToken());
         httpServletResponse.setHeader("RefreshToken", tokenDto.getRefreshToken());
+        httpServletResponse.setHeader("AccessTokenExpireTime", tokenDto.getAccessTokenExpiresIn().toString());
+        httpServletResponse.setHeader("Nickname", kakaoMember.getNickname());
+        httpServletResponse.setHeader("Authority", kakaoMember.getAuthority().toString());
 
         return new ResponseEntity<>("로그인 성공", HttpStatus.OK);
     }
