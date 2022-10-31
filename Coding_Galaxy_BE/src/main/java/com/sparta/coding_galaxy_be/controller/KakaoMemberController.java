@@ -1,4 +1,4 @@
-package com.sparta.coding_galaxy_be.contoller;
+package com.sparta.coding_galaxy_be.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sparta.coding_galaxy_be.service.KakaoMemberService;
