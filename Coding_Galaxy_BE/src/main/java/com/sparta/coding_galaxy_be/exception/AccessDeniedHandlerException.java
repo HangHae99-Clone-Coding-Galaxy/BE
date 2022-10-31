@@ -1,7 +1,7 @@
 package com.sparta.coding_galaxy_be.exception;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sparta.coding_galaxy_be.entity.Error;
+import com.sparta.coding_galaxy_be.entity.ErrorMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -19,7 +19,7 @@ public class AccessDeniedHandlerException implements AccessDeniedHandler {
         response.setContentType("application/json;charset=UTF-8");
         response.getWriter().println(
                 new ObjectMapper().writeValueAsString(
-                        new ResponseEntity<>(new Error("BAD_REQUEST", "로그인이 필요합니다."), HttpStatus.BAD_REQUEST)
+                        new ResponseEntity<>(new ErrorMessage("BAD_REQUEST", "로그인이 필요합니다."), HttpStatus.BAD_REQUEST)
                 )
         );
     }

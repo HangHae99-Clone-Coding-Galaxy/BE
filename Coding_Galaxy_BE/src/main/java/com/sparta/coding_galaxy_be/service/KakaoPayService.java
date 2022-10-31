@@ -16,8 +16,6 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class KakaoPayService {
 
-    private final CoursesRepository coursesRepository;
-
     @Value("${client-id}")
     private String kakaoRestApiKey;
 
@@ -26,14 +24,6 @@ public class KakaoPayService {
 
         //장바구니 정보에서 상품, 수량, 가격, 총합을 꺼내옴 -> 상품 관련 내용은 Course 객체에 저장
 
-        Courses courses = coursesRepository.findByid(course_id).orElseThrow(
-                () -> new RuntimeException("찾을 수 없는 강의 입니다.")
-        );
-
-        Payment payment = Payment.Builder()
-                .courses(courses)
-                .amount(courses.price)
-                .build();
 
         //카카오 페이 서버 (https://kapi.kakao.com/v1/payment/ready) 에 정보 전달
 
@@ -42,12 +32,12 @@ public class KakaoPayService {
 
         MultiValueMap<String, String> httpBody = new LinkedMultiValueMap<>();
         httpBody.add("cid", "TC0ONETIME");
-        httpBody.add("partner_order_id", payment.getId());
+        httpBody.add("partner_order_id", course_id);
         httpBody.add("partner_user_id", kakaoMember.getNickname());
-        httpBody.add("item_name", courses.getTitle());
+        httpBody.add("item_name", course_id);
         httpBody.add("item_code", course_id);
         httpBody.add("quantity", "1");
-        httpBody.add("total_amount", payment.getAmount());
+        httpBody.add("total_amount", course_id);
         httpBody.add("tax_free_amount", "0");
         httpBody.add("approval_url", "APPROVAL_URL");
         httpBody.add("cancel_url", "CANCEL_URL");

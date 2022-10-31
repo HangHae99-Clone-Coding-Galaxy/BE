@@ -48,6 +48,7 @@ public class KakaoMemberService {
                     .kakaoMemberId(kakaoMemberInformationDto.getKakaoMemberId())
                     .email(kakaoMemberInformationDto.getEmail())
                     .name("KAKAO" + UUID.randomUUID())
+                    .profileImage(kakaoMemberInformationDto.getProfile_image_url())
                     .nickname(kakaoMemberInformationDto.getNickname())
                     .password(passwordEncoder.encode(UUID.randomUUID().toString()))
                     .authority(Authority.ROLE_MEMBER)
