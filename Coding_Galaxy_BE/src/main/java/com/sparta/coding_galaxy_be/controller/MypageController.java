@@ -27,13 +27,13 @@ public class MypageController {
         return mypageService.editMyInfo(editMyInfoRequestDto,kakaoMemberDetails.getKakaoMember());
     }
 
-//    @GetMapping("/payment")
-//    public ResponseEntity<?> getMyPayment(@AuthenticationPrincipal KakaoMemberDetailsImpl kakaoMemberDetails){
-//        return mypageService.getMyPayment(kakaoMemberDetails.getKakaoMember());
-//    }
-//
-//    @GetMapping("/reviews")
-//    public ResponseEntity<?> getMyReviews(@AuthenticationPrincipal KakaoMemberDetailsImpl kakaoMemberDetails){
-//        return mypageService.getMyReviews(kakaoMemberDetails.getKakaoMember());
-//    }
+    @GetMapping("/payment")
+    public ResponseEntity<?> getMyPayment(@AuthenticationPrincipal KakaoMemberDetailsImpl kakaoMemberDetails){
+        return mypageService.getMyPayment(kakaoMemberDetails.getKakaoMember());
+    }
+
+    @GetMapping("/reviews")
+    public ResponseEntity<?> getMyReviews(@AuthenticationPrincipal KakaoMemberDetailsImpl kakaoMemberDetails){
+        return mypageService.getMyReviews(kakaoMemberDetails.getKakaoMember());
+    }
 }

@@ -2,20 +2,32 @@ package com.sparta.coding_galaxy_be.service;
 
 import com.sparta.coding_galaxy_be.dto.requestDto.EditMyInfoRequestDto;
 import com.sparta.coding_galaxy_be.dto.responseDto.MypageResponseDto;
+import com.sparta.coding_galaxy_be.dto.responseDto.PaymentResponseDto;
+import com.sparta.coding_galaxy_be.dto.responseDto.ReviewResponseDto;
 import com.sparta.coding_galaxy_be.entity.KakaoMembers;
+import com.sparta.coding_galaxy_be.entity.Payment;
+import com.sparta.coding_galaxy_be.entity.Reviews;
 import com.sparta.coding_galaxy_be.repository.KakaoMembersRepository;
+import com.sparta.coding_galaxy_be.repository.PaymentRepository;
+import com.sparta.coding_galaxy_be.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class MypageService {
 
     private final KakaoMembersRepository kakaoMembersRepository;
+    private final ReviewRepository reviewRepository;
+    private final PaymentRepository paymentRepository;
+    private final S3UploadService s3UploadService;
 
     public ResponseEntity<?> getMypage(KakaoMembers kakaoMember) {
 
@@ -27,18 +39,61 @@ public class MypageService {
         return new ResponseEntity<>(mypageResponseDto, HttpStatus.OK);
     }
 
+    @Transactional
     public ResponseEntity<?> editMyInfo(EditMyInfoRequestDto editMyInfoRequestDto, KakaoMembers kakaoMember) throws IOException {
 
-        //S3 Service 적용 후 수정 필요
-        kakaoMember.editMyInfo(editMyInfoRequestDto);
+        if (editMyInfoRequestDto.getProfileImage() != null) {
+            String imageUrl = s3UploadService.upload(editMyInfoRequestDto.getProfileImage(), "member");
+            kakaoMember.editMyProfileImage(imageUrl);
+        }
+
+        if (editMyInfoRequestDto.getNickname() != null) {
+            kakaoMember.editMyNickname(editMyInfoRequestDto.getNickname());
+        }
+
         kakaoMembersRepository.save(kakaoMember);
 
         return new ResponseEntity<>("내 정보 변경 성공", HttpStatus.OK);
     }
 
-//    public ResponseEntity<?> getMyPayment(KakaoMembers kakaoMember) {
-//    }
-//
-//    public ResponseEntity<?> getMyReviews(KakaoMembers kakaoMember) {
-//    }
+    public ResponseEntity<?> getMyPayment(KakaoMembers kakaoMember) {
+
+        List<Payment> paymentList = paymentRepository.findAllByKakaoMember(kakaoMember);
+        List<PaymentResponseDto> paymentResponseDtoList = new ArrayList<>();
+
+        for(Payment payment : paymentList){
+            paymentResponseDtoList.add(
+                    PaymentResponseDto.builder()
+                            .paymentId(payment.getPaymentId())
+                            .item_name(payment.getItem_name())
+                            .item_code(payment.getItem_code())
+                            .created_at(payment.getCreated_at())
+                            .approved_at(payment.getApproved_at())
+                            .amount(payment.getAmount())
+                            .payment_method_type(payment.getPayment_method_type())
+                            .build()
+            );
+        }
+
+        return new ResponseEntity<>(paymentResponseDtoList, HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getMyReviews(KakaoMembers kakaoMember) {
+
+        List<Reviews> reviewsList = reviewRepository.findAllByKakaoMember(kakaoMember);
+        List<ReviewResponseDto> reviewResponseDtoList = new ArrayList<>();
+
+        for(Reviews review : reviewsList){
+            reviewResponseDtoList.add(
+                    ReviewResponseDto.builder()
+                            .review_id(review.getReviewId())
+                            .nickname(review.getKakaoMember().getNickname())
+                            .star(review.getStar())
+                            .comment(review.getComment())
+                            .build()
+            );
+        }
+
+        return new ResponseEntity<>(reviewResponseDtoList, HttpStatus.OK);
+    }
 }

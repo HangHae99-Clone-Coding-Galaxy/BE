@@ -55,7 +55,7 @@ public class KakaoOauth {
         HttpEntity<MultiValueMap<String, String>> kakaoMemberInfoRequest = new HttpEntity<>(httpHeaders);
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> responseEntity = restTemplate.exchange(
-                "https://kapi.kaka.com/v2/user/me",
+                "https://kapi.kakao.com/v2/user/me",
                 HttpMethod.POST,
                 kakaoMemberInfoRequest,
                 String.class

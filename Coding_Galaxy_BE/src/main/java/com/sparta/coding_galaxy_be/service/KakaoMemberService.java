@@ -63,6 +63,8 @@ public class KakaoMemberService {
 
         TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
 
+        System.out.println(tokenDto.getAccessToken());
+
         RefreshToken refreshToken = RefreshToken.builder()
                 .key(authentication.getName())
                 .value(tokenDto.getRefreshToken())

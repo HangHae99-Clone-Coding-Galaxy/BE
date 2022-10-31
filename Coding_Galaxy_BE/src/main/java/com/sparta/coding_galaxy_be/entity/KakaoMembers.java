@@ -41,8 +41,12 @@ public class KakaoMembers {
     @Enumerated(EnumType.STRING)
     private Authority authority;
 
-    public void editMyInfo(EditMyInfoRequestDto editMyInfoRequestDto) {
-//        this.profileImage = editMyInfoRequestDto.getProfileImage() != null ? editMyInfoRequestDto.getProfileImage() : this.profileImage;
-        this.nickname = editMyInfoRequestDto.getNickname() != null ? editMyInfoRequestDto.getNickname() : this.nickname;
+    public void editMyProfileImage(String profileImage) {
+        this.profileImage = profileImage;
     }
+
+    public void editMyNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
 }
