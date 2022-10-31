@@ -20,7 +20,7 @@ public class KakaoPayController {
 
     //tid 및 redirect_url 반환
     @GetMapping("/api/order/{course_id}")
-    public ResponseEntity<?> paymentReady(@PathVariable String course_id, @AuthenticationPrincipal KakaoMemberDetailsImpl kakaoMemberDetailsimpl) throws JsonProcessingException {
+    public ResponseEntity<?> paymentReady(@PathVariable Long course_id, @AuthenticationPrincipal KakaoMemberDetailsImpl kakaoMemberDetailsimpl) throws JsonProcessingException {
         return kakaoPayService.paymentReady(course_id, kakaoMemberDetailsimpl.getKakaoMember());
     }
 

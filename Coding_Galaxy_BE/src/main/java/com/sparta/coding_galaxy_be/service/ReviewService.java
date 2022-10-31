@@ -1,7 +1,11 @@
 package com.sparta.coding_galaxy_be.service;
 
 import com.sparta.coding_galaxy_be.dto.requestDto.ReviewRequestDto;
+import com.sparta.coding_galaxy_be.entity.Courses;
+import com.sparta.coding_galaxy_be.entity.KakaoMemberDetailsImpl;
+import com.sparta.coding_galaxy_be.entity.KakaoMembers;
 import com.sparta.coding_galaxy_be.entity.Reviews;
+import com.sparta.coding_galaxy_be.repository.CourseRepository;
 import com.sparta.coding_galaxy_be.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,12 +19,19 @@ import javax.transaction.Transactional;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
+    private final CourseRepository courseRepository;
 
-    public ResponseEntity<?> createReview(ReviewRequestDto reviewRequestDto) {
+    public ResponseEntity<?> createReview(Long courseId, ReviewRequestDto reviewRequestDto, KakaoMembers kakaoMembers) {
+
+        Courses course = courseRepository.findById(courseId).orElseThrow(
+                () -> new RuntimeException("강의가 존재하지 않습니다.")
+        );
 
         Reviews review = Reviews.builder().
                 star(reviewRequestDto.getStar()).
                 comment(reviewRequestDto.getComment()).
+                kakaoMember(kakaoMembers).
+                course(course).
                 build();
 
         reviewRepository.save(review);

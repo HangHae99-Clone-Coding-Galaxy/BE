@@ -16,9 +16,9 @@ public class KakaoMemberDetailsServiceImpl implements UserDetailsService {
     private final KakaoMembersRepository kakaoMembersRepository;
     
     @Override
-    public UserDetails loadUserByUsername(String nickname) throws UsernameNotFoundException {
-        KakaoMembers kakaoMember = kakaoMembersRepository.findByNickname(nickname).orElseThrow(
-                () -> new UsernameNotFoundException(nickname + "을(를) 찾을 수 없습니다.")
+    public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
+        KakaoMembers kakaoMember = kakaoMembersRepository.findByName(name).orElseThrow(
+                () -> new UsernameNotFoundException("유저를 찾을 수 없습니다.")
         );
 
         return new KakaoMemberDetailsImpl(kakaoMember);

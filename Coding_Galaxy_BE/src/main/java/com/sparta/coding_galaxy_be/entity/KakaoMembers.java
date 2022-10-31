@@ -1,6 +1,8 @@
 package com.sparta.coding_galaxy_be.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sparta.coding_galaxy_be.dto.requestDto.EditMyInfoRequestDto;
+import com.sparta.coding_galaxy_be.dto.responseDto.MypageResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,6 +28,9 @@ public class KakaoMembers {
     private String name;
 
     @Column(nullable = false)
+    private String profileImage;
+
+    @Column(nullable = false)
     private String nickname;
 
     @JsonIgnore
@@ -35,4 +40,13 @@ public class KakaoMembers {
     @JsonIgnore
     @Enumerated(EnumType.STRING)
     private Authority authority;
+
+    public void editMyProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
+
+    public void editMyNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
 }
