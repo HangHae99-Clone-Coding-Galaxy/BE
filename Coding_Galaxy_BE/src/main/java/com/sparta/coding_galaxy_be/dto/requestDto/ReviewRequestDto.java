@@ -6,6 +6,5 @@ import lombok.Getter;
 public class ReviewRequestDto {
 
     private Long star;
-
     private String comment;
 }

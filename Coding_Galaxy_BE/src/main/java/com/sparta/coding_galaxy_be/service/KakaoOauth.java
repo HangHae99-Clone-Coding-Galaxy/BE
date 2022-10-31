@@ -55,7 +55,7 @@ public class KakaoOauth {
         HttpEntity<MultiValueMap<String, String>> kakaoMemberInfoRequest = new HttpEntity<>(httpHeaders);
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> responseEntity = restTemplate.exchange(
-                "https://kapi.kaka.com/v2/user/me",
+                "https://kapi.kakao.com/v2/user/me",
                 HttpMethod.POST,
                 kakaoMemberInfoRequest,
                 String.class
@@ -67,11 +67,13 @@ public class KakaoOauth {
         Long kakaoMemberId = jsonNode.get("id").asLong();
         String email = jsonNode.get("kakao_account").get("email").asText();
         String nickname = jsonNode.get("kakao_account").get("profile").get("nickname").asText();
+        String profile_image_url = jsonNode.get("kakao_account").get("profile").get("profile_image_url").asText();
 
         return KakaoMemberInformationDto.builder()
                 .kakaoMemberId(kakaoMemberId)
                 .email(email)
                 .nickname(nickname)
+                .profile_image_url(profile_image_url)
                 .build();
     }
 }

@@ -35,6 +35,9 @@ public class Courses extends TimeStamped {
 
     @Column(name = "video")
     private String video;
+
+    @Column(name = "price")
+    private int price;
     
     // 작성자 mapping 추가
     

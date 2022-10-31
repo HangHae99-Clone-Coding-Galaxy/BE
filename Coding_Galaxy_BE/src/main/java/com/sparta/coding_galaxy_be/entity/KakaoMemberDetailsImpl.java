@@ -39,7 +39,7 @@ public class KakaoMemberDetailsImpl implements UserDetails {
 
     @Override
     public String getUsername() {
-        return kakaoMember.getNickname();
+        return kakaoMember.getName();
     }
 
     @Override
