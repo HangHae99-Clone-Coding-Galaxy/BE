@@ -1,8 +1,7 @@
 package com.sparta.coding_galaxy_be.dto.requestDto;
 
 import lombok.Getter;
-
-import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 public class CourseRequestDto {
@@ -11,8 +10,7 @@ public class CourseRequestDto {
 
     private String content;
 
-    // imageList?
-    private List<String> image;
+    private MultipartFile thumbNail;
 
-    private String video;
+    private MultipartFile video;
 }

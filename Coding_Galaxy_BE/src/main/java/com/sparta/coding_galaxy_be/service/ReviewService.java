@@ -40,12 +40,13 @@ public class ReviewService {
     }
 
     @Transactional
-    public ResponseEntity<?> editReview(Long reviewId, ReviewRequestDto reviewRequestDto) {
+    public ResponseEntity<?> editReview(Long reviewId, ReviewRequestDto reviewRequestDto, KakaoMembers kakaoMembers) {
 
         Reviews updateReview = reviewRepository.findById(reviewId).orElseThrow(()
             -> new NullPointerException("리뷰가 없습니다."));
 
         // 작성자와 로그인 사용자 비교 로직
+
         updateReview.updateReview(
                 reviewRequestDto.getStar(),
                 reviewRequestDto.getComment()
@@ -54,7 +55,9 @@ public class ReviewService {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public ResponseEntity<?> removeReview(Long reviewId) {
+    public ResponseEntity<?> removeReview(Long reviewId, KakaoMembers kakaoMembers) {
+
+        // 작성자와 로그인 사용자 비교 로직
 
         reviewRepository.deleteById(reviewId);
 

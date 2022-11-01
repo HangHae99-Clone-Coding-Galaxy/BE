@@ -3,8 +3,6 @@ package com.sparta.coding_galaxy_be.dto.responseDto;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.*;
-
 @Getter
 @Builder
 public class CourseListResponseDto {
@@ -15,8 +13,9 @@ public class CourseListResponseDto {
 
     private String content;
 
-    // imageList????
-    private List<String> imageList;
+    private String thumbNail;
 
     private String video;
+
+    private Double star;
 }

@@ -38,11 +38,11 @@ public class Payment {
     @Column
     private String payment_method_type;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "kakaomember_id", nullable = false)
     private KakaoMembers kakaoMember;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = false)
     private Courses course;
 

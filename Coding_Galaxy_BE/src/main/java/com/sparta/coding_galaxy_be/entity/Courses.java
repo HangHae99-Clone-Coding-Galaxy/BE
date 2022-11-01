@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Getter
 @Builder
@@ -29,9 +28,8 @@ public class Courses extends TimeStamped {
 
     // imageList??
     // 썸네일??
-    @Column(name = "image")
-    @ElementCollection
-    private List<String> image;
+    @Column(name = "thumbNail")
+    private String thumbNail;
 
     @Column(name = "video")
     private String video;
@@ -40,14 +38,15 @@ public class Courses extends TimeStamped {
     private int price;
     
     // 작성자 mapping 추가
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "kakaomember_id")
+    private KakaoMembers kakaoMember;
     
     // review 양방향 처리 질문 필요
     // 우선 단방향 처리 예정
 
-    public void updateCourse(String title, String content, List<String> image, String video) {
+    public void updateCourse(String title, String content) {
         this.title = title;
         this.content = content;
-        this.image = image;
-        this.video = video;
     }
 }

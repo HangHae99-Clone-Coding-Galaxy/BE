@@ -1,5 +1,6 @@
 package com.sparta.coding_galaxy_be.dto.responseDto;
 
+import com.sparta.coding_galaxy_be.entity.Reviews;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,14 +16,17 @@ public class CourseResponseDto {
 
     private String content;
 
-    // imageList?
-    private List<String> image;
+    private String thumbNail;
 
     private String video;
 
-    // reviewList 추가
+    private List<Reviews> reviewList;
 
     private Long subscribeCount;
 
     private String nickname;
+
+    private String kakaoMember;
+
+    private double starAverage;
 }

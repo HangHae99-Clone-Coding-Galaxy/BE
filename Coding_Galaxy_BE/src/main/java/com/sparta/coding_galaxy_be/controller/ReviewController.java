@@ -12,25 +12,27 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/reviews")
+@RequestMapping("/api/courses")
 public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @PostMapping("/{course_id}")
+    @PostMapping("/{course_id}/reviews/create")
     public ResponseEntity<?> createReview(@PathVariable Long courseId, @RequestBody ReviewRequestDto reviewRequestDto,
                                           @AuthenticationPrincipal KakaoMemberDetailsImpl kakaoMemberDetailsimpl) {
         return reviewService.createReview(courseId, reviewRequestDto, kakaoMemberDetailsimpl.getKakaoMember());
     }
 
-    @PutMapping("/{review_id}")
+    @PutMapping("/reviews/{review_id}/edit")
     public ResponseEntity<?> editReview(@PathVariable Long reviewId,
-                                        @RequestBody ReviewRequestDto reviewRequestDto) {
-        return reviewService.editReview(reviewId, reviewRequestDto);
+                                        @RequestBody ReviewRequestDto reviewRequestDto,
+                                        @AuthenticationPrincipal KakaoMemberDetailsImpl kakaoMemberDetailsimpl) {
+        return reviewService.editReview(reviewId, reviewRequestDto ,kakaoMemberDetailsimpl.getKakaoMember());
     }
 
-    @DeleteMapping("/{review_id}")
-    public ResponseEntity<?> removeReview(@PathVariable Long reviewId){
-        return reviewService.removeReview(reviewId);
+    @DeleteMapping("/reviews/{review_id}/remove")
+    public ResponseEntity<?> removeReview(@PathVariable Long reviewId,
+                                          @AuthenticationPrincipal KakaoMemberDetailsImpl kakaoMemberDetailsimpl){
+        return reviewService.removeReview(reviewId, kakaoMemberDetailsimpl.getKakaoMember());
     }
 }
