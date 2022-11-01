@@ -19,6 +19,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class KakaoPayService {
@@ -52,7 +54,7 @@ public class KakaoPayService {
 
         MultiValueMap<String, String> httpBody = new LinkedMultiValueMap<>();
         httpBody.add("cid", "TC0ONETIME");
-        httpBody.add("partner_order_id", payment.getPaymentId());
+        httpBody.add("partner_order_id", payment.getPaymentId().toString());
         httpBody.add("partner_user_id", kakaoMember.getNickname());
         httpBody.add("item_name", course.getTitle());
         httpBody.add("item_code", course_id.toString());
@@ -80,7 +82,7 @@ public class KakaoPayService {
         KakaoPayRequestDto kakaoPayRequestDto = KakaoPayRequestDto.builder()
                 .tid(jsonNode.get("tid").asText())
                 .next_redirect_pc_url(jsonNode.get("next_redirect_pc_url").asText())
-                .partner_order_id(payment.getPaymentId())
+                .partner_order_id(payment.getPaymentId().toString())
                 .build();
 
         paymentRepository.save(payment);
@@ -92,7 +94,7 @@ public class KakaoPayService {
     public ResponseEntity<?> paymentRequest(KakaoPayRequestDto kakaoPayRequestDto, KakaoMembers kakaoMember) throws JsonProcessingException {
 
         //결제 내역을 찾아옴
-        Payments payment = paymentRepository.findById(Long.parseLong(kakaoPayRequestDto.getPartner_order_id())).orElseThrow(
+        Payments payment = paymentRepository.findById(kakaoPayRequestDto.getPartner_order_id()).orElseThrow(
                 () -> new RuntimeException("결제 내역을 찾을 수 없습니다.")
         );
 

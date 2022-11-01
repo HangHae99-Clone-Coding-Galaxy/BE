@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface PaymentRepository extends JpaRepository<Payments, Long> {
+public interface PaymentRepository extends JpaRepository<Payments, String> {
 
     List<Payments> findAllByKakaoMember(KakaoMembers kakaoMember);
     boolean existsByCourseAndKakaoMember(Courses course, KakaoMembers kakaoMember);

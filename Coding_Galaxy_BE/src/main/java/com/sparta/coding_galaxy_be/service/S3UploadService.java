@@ -1,7 +1,15 @@
 package com.sparta.coding_galaxy_be.service;
 
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,58 +17,122 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.Optional;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class S3UploadService {
 
-    private final AmazonS3Client amazonS3Client;
+    private final AmazonS3 s3Client;
+
+    @Value("${cloud.aws.credentials.access-key}")
+    private String accessKey;
+
+    @Value("${cloud.aws.credentials.secret-key}")
+    private String secretKey;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    public String upload(MultipartFile multipartFile, String dirName) throws IOException {
+    @Value("${cloud.aws.region.static}")
+    private String region;
 
-        File uploadFile = convert(multipartFile).orElseThrow(() -> new IllegalArgumentException("Fail : Multipart File -> File Convert"));
-        return upload(uploadFile, dirName);
+    @PostConstruct
+    public AmazonS3Client amazonS3Client() {
+        BasicAWSCredentials awsCreds = new BasicAWSCredentials(accessKey, secretKey);
+        return (AmazonS3Client) AmazonS3ClientBuilder.standard()
+                .withRegion(region)
+                .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
+                .build();
     }
 
-    private String upload(File uploadFile, String dirName) {
+    public String uploadImage(MultipartFile multipartFile) {
 
-        String fileName = dirName + "/" + UUID.randomUUID() + uploadFile.getName();
-        String uploadImageUrl = putS3(uploadFile, fileName);
-        removeNewFile(uploadFile);
-        return uploadImageUrl;
-    }
+        String imageUrl = null;
 
-    private void removeNewFile(File targetFile) {
-        if (targetFile.delete()) {
-            log.info("File delete success");
-            return;
+        String fileName = createImageFileName(multipartFile.getOriginalFilename());
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentLength(multipartFile.getSize());
+        objectMetadata.setContentType(multipartFile.getContentType());
+
+        try (InputStream inputStream = multipartFile.getInputStream()) {
+            s3Client.putObject(new PutObjectRequest(bucket + "/post/image", fileName, inputStream, objectMetadata)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+            imageUrl = (s3Client.getUrl(bucket + "/post/image", fileName).toString());
+        } catch (IOException e) {
+            throw new RuntimeException("테스트 런타임 예외");
         }
-        log.info("File delete fail");
+
+        return imageUrl;
     }
 
-    private String putS3(File uploadFile, String fileName) {
-        amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
-        return "https://codinggalaxy.s3.ap-northeast-2.amazonaws.com/" + fileName;
-    }
+    public String uploadVideo(MultipartFile multipartFile) {
 
-    private Optional<File> convert(MultipartFile file) throws IOException {
-        File convertFile = new File(System.getProperty("user.dir") + "/" + file.getOriginalFilename());
+        String videoUrl = null;
 
-        if (convertFile.createNewFile()) {
-            try (FileOutputStream fos = new FileOutputStream(convertFile)) {
-                fos.write(file.getBytes());
-            }
-            return Optional.of(convertFile);
+        String fileName = createVideoFileName(multipartFile.getOriginalFilename());
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentLength(multipartFile.getSize());
+        objectMetadata.setContentType(multipartFile.getContentType());
+
+        try (InputStream inputStream = multipartFile.getInputStream()) {
+            s3Client.putObject(new PutObjectRequest(bucket + "/post/media", fileName, inputStream, objectMetadata)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+            videoUrl = (s3Client.getUrl(bucket + "/post/media", fileName).toString());
+        } catch (IOException e) {
+            throw new RuntimeException("테스트 런타임 예외");
         }
-        return Optional.empty();
+
+        return videoUrl;
     }
+
+    public void delete(String key) {
+        try {
+            //Delete 객체 생성
+            DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(this.bucket, key);
+            //Delete
+            this.s3Client.deleteObject(deleteObjectRequest);
+            System.out.println(String.format("[%s] deletion complete", key));
+
+        } catch (AmazonServiceException e) {
+            e.printStackTrace();
+        } catch (SdkClientException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 이미지파일명 중복 방지
+    private String createImageFileName(String fileName) {
+        return UUID.randomUUID().toString().concat(getImageFileExtension(fileName));
+    }
+
+    private String createVideoFileName(String fileName) {
+        return UUID.randomUUID().toString().concat(getVideoFileExtension(fileName));
+    }
+
+    // 파일 유효성 검사
+    private String getImageFileExtension(String fileName) {
+        ArrayList<String> fileValidate = new ArrayList<>();
+        fileValidate.add(".jpg");
+        fileValidate.add(".jpeg");
+        fileValidate.add(".png");
+        fileValidate.add(".JPG");
+        fileValidate.add(".JPEG");
+        fileValidate.add(".PNG");
+        return fileName.substring(fileName.lastIndexOf("."));
+    }
+
+    private String getVideoFileExtension(String fileName) {
+        ArrayList<String> fileValidate = new ArrayList<>();
+        fileValidate.add(".mp4");
+        fileValidate.add(".mov");
+        fileValidate.add(".mkv");
+        return fileName.substring(fileName.lastIndexOf("."));
+    }
+
 }
