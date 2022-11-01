@@ -72,6 +72,7 @@ public class SecurityConfiguration {
                 .antMatchers(HttpMethod.POST).authenticated()
                 .antMatchers(HttpMethod.DELETE).authenticated()
                 .antMatchers(HttpMethod.PUT).authenticated()
+                .antMatchers(HttpMethod.PATCH).authenticated()
                 .anyRequest()
                 .permitAll()
 

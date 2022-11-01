@@ -8,4 +8,5 @@ import java.util.List;
 public interface CourseRepository extends JpaRepository<Courses, Long> {
 
     List<Courses> findAllByTitle(String searchText);
+    boolean existsByCourseId(Long courseId);
 }

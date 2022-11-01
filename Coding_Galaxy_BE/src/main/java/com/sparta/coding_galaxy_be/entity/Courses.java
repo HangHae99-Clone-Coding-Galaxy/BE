@@ -1,5 +1,6 @@
 package com.sparta.coding_galaxy_be.entity;
 
+import com.sparta.coding_galaxy_be.dto.requestDto.CourseRequestDto;
 import com.sparta.coding_galaxy_be.util.TimeStamped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +11,7 @@ import javax.persistence.*;
 
 @Getter
 @Builder
-@Entity(name = "course")
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 public class Courses extends TimeStamped {
@@ -45,8 +46,13 @@ public class Courses extends TimeStamped {
     // review 양방향 처리 질문 필요
     // 우선 단방향 처리 예정
 
-    public void updateCourse(String title, String content) {
-        this.title = title;
-        this.content = content;
+    public void editCourseDetail(CourseRequestDto courseRequestDto) {
+        this.title = courseRequestDto.getTitle();
+        this.content = courseRequestDto.getContent();
+    }
+
+    public void editCourseMedia(String thumbnailUrl, String videoUrl) {
+        this.thumbNail = thumbnailUrl;
+        this.video = videoUrl;
     }
 }

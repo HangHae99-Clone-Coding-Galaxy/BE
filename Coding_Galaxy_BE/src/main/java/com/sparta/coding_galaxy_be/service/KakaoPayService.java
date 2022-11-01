@@ -7,19 +7,21 @@ import com.sparta.coding_galaxy_be.dto.requestDto.KakaoPayRequestDto;
 import com.sparta.coding_galaxy_be.dto.responseDto.KakaoPayApprovalResponseDto;
 import com.sparta.coding_galaxy_be.entity.Courses;
 import com.sparta.coding_galaxy_be.entity.KakaoMembers;
-import com.sparta.coding_galaxy_be.entity.Payment;
+import com.sparta.coding_galaxy_be.entity.Payments;
 import com.sparta.coding_galaxy_be.repository.CourseRepository;
 import com.sparta.coding_galaxy_be.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-@Component
+import java.util.UUID;
+
+@Service
 @RequiredArgsConstructor
 public class KakaoPayService {
 
@@ -38,9 +40,9 @@ public class KakaoPayService {
         );
 
         //Payment 객체 생성하여 결제 관련 정보 저장
-        Payment payment = Payment.builder()
-                .item_name(course.getTitle())
-                .item_code(course_id)
+        Payments payment = Payments.builder()
+                .itemName(course.getTitle())
+                .itemCode(course_id)
                 .amount(course.getPrice())
                 .kakaoMember(kakaoMember)
                 .course(course)
@@ -52,7 +54,7 @@ public class KakaoPayService {
 
         MultiValueMap<String, String> httpBody = new LinkedMultiValueMap<>();
         httpBody.add("cid", "TC0ONETIME");
-        httpBody.add("partner_order_id", payment.getPaymentId());
+        httpBody.add("partner_order_id", payment.getPaymentId().toString());
         httpBody.add("partner_user_id", kakaoMember.getNickname());
         httpBody.add("item_name", course.getTitle());
         httpBody.add("item_code", course_id.toString());
@@ -80,7 +82,7 @@ public class KakaoPayService {
         KakaoPayRequestDto kakaoPayRequestDto = KakaoPayRequestDto.builder()
                 .tid(jsonNode.get("tid").asText())
                 .next_redirect_pc_url(jsonNode.get("next_redirect_pc_url").asText())
-                .partner_order_id(payment.getPaymentId())
+                .partner_order_id(payment.getPaymentId().toString())
                 .build();
 
         paymentRepository.save(payment);
@@ -92,7 +94,7 @@ public class KakaoPayService {
     public ResponseEntity<?> paymentRequest(KakaoPayRequestDto kakaoPayRequestDto, KakaoMembers kakaoMember) throws JsonProcessingException {
 
         //결제 내역을 찾아옴
-        Payment payment = paymentRepository.findById(Long.parseLong(kakaoPayRequestDto.getPartner_order_id())).orElseThrow(
+        Payments payment = paymentRepository.findById(kakaoPayRequestDto.getPartner_order_id()).orElseThrow(
                 () -> new RuntimeException("결제 내역을 찾을 수 없습니다.")
         );
 

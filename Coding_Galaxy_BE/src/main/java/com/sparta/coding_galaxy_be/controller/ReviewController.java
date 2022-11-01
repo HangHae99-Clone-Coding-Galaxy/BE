@@ -18,21 +18,21 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @PostMapping("/{course_id}/reviews/create")
-    public ResponseEntity<?> createReview(@PathVariable Long courseId, @RequestBody ReviewRequestDto reviewRequestDto,
+    public ResponseEntity<?> createReview(@PathVariable(name = "course_id") Long courseId, @RequestBody ReviewRequestDto reviewRequestDto,
                                           @AuthenticationPrincipal KakaoMemberDetailsImpl kakaoMemberDetailsimpl) {
         return reviewService.createReview(courseId, reviewRequestDto, kakaoMemberDetailsimpl.getKakaoMember());
     }
 
-    @PutMapping("/reviews/{review_id}/edit")
-    public ResponseEntity<?> editReview(@PathVariable Long reviewId,
+    @PutMapping("/{course_id}/reviews/edit")
+    public ResponseEntity<?> editReview(@PathVariable(name = "course_id") Long courseId, @RequestParam(value = "review-id") Long reviewId,
                                         @RequestBody ReviewRequestDto reviewRequestDto,
                                         @AuthenticationPrincipal KakaoMemberDetailsImpl kakaoMemberDetailsimpl) {
-        return reviewService.editReview(reviewId, reviewRequestDto ,kakaoMemberDetailsimpl.getKakaoMember());
+        return reviewService.editReview(courseId, reviewId, reviewRequestDto ,kakaoMemberDetailsimpl.getKakaoMember());
     }
 
-    @DeleteMapping("/reviews/{review_id}/remove")
-    public ResponseEntity<?> removeReview(@PathVariable Long reviewId,
+    @DeleteMapping("/{course_id}/reviews/remove")
+    public ResponseEntity<?> deleteReview(@PathVariable(name = "course_id") Long courseId, @RequestParam(value = "review-id") Long reviewId,
                                           @AuthenticationPrincipal KakaoMemberDetailsImpl kakaoMemberDetailsimpl){
-        return reviewService.removeReview(reviewId, kakaoMemberDetailsimpl.getKakaoMember());
+        return reviewService.deleteReview(courseId, reviewId, kakaoMemberDetailsimpl.getKakaoMember());
     }
 }

@@ -5,7 +5,7 @@ import com.sparta.coding_galaxy_be.dto.responseDto.MypageResponseDto;
 import com.sparta.coding_galaxy_be.dto.responseDto.PaymentResponseDto;
 import com.sparta.coding_galaxy_be.dto.responseDto.ReviewResponseDto;
 import com.sparta.coding_galaxy_be.entity.KakaoMembers;
-import com.sparta.coding_galaxy_be.entity.Payment;
+import com.sparta.coding_galaxy_be.entity.Payments;
 import com.sparta.coding_galaxy_be.entity.Reviews;
 import com.sparta.coding_galaxy_be.repository.KakaoMembersRepository;
 import com.sparta.coding_galaxy_be.repository.PaymentRepository;
@@ -43,7 +43,7 @@ public class MypageService {
     public ResponseEntity<?> editMyInfo(EditMyInfoRequestDto editMyInfoRequestDto, KakaoMembers kakaoMember) throws IOException {
 
         if (editMyInfoRequestDto.getProfileImage() != null) {
-            String imageUrl = s3UploadService.upload(editMyInfoRequestDto.getProfileImage(), "member");
+            String imageUrl = s3UploadService.uploadImage(editMyInfoRequestDto.getProfileImage());
             kakaoMember.editMyProfileImage(imageUrl);
         }
 
@@ -58,19 +58,19 @@ public class MypageService {
 
     public ResponseEntity<?> getMyPayment(KakaoMembers kakaoMember) {
 
-        List<Payment> paymentList = paymentRepository.findAllByKakaoMember(kakaoMember);
+        List<Payments> paymentList = paymentRepository.findAllByKakaoMember(kakaoMember);
         List<PaymentResponseDto> paymentResponseDtoList = new ArrayList<>();
 
-        for(Payment payment : paymentList){
+        for (Payments payment : paymentList) {
             paymentResponseDtoList.add(
                     PaymentResponseDto.builder()
-                            .paymentId(payment.getPaymentId())
-                            .item_name(payment.getItem_name())
-                            .item_code(payment.getItem_code())
-                            .created_at(payment.getCreated_at())
-                            .approved_at(payment.getApproved_at())
+                            .paymentId(payment.getPaymentId().toString())
+                            .item_name(payment.getItemName())
+                            .item_code(payment.getItemCode())
+                            .created_at(payment.getCreatedAt())
+                            .approved_at(payment.getApprovedAt())
                             .amount(payment.getAmount())
-                            .payment_method_type(payment.getPayment_method_type())
+                            .payment_method_type(payment.getPaymentMethodType())
                             .build()
             );
         }
@@ -83,7 +83,7 @@ public class MypageService {
         List<Reviews> reviewsList = reviewRepository.findAllByKakaoMember(kakaoMember);
         List<ReviewResponseDto> reviewResponseDtoList = new ArrayList<>();
 
-        for(Reviews review : reviewsList){
+        for (Reviews review : reviewsList) {
             reviewResponseDtoList.add(
                     ReviewResponseDto.builder()
                             .review_id(review.getReviewId())
