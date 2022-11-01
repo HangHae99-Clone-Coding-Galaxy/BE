@@ -43,7 +43,7 @@ public class MypageService {
     public ResponseEntity<?> editMyInfo(EditMyInfoRequestDto editMyInfoRequestDto, KakaoMembers kakaoMember) throws IOException {
 
         if (editMyInfoRequestDto.getProfileImage() != null) {
-            String imageUrl = s3UploadService.upload(editMyInfoRequestDto.getProfileImage(), "member/profile");
+            String imageUrl = s3UploadService.uploadImage(editMyInfoRequestDto.getProfileImage());
             kakaoMember.editMyProfileImage(imageUrl);
         }
 
@@ -64,7 +64,7 @@ public class MypageService {
         for (Payments payment : paymentList) {
             paymentResponseDtoList.add(
                     PaymentResponseDto.builder()
-                            .paymentId(payment.getPaymentId())
+                            .paymentId(payment.getPaymentId().toString())
                             .item_name(payment.getItemName())
                             .item_code(payment.getItemCode())
                             .created_at(payment.getCreatedAt())

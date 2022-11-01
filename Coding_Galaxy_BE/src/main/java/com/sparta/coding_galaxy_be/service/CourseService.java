@@ -142,8 +142,8 @@ public class CourseService {
         Courses course = Courses.builder()
                 .title(courseRequestDto.getTitle())
                 .content(courseRequestDto.getContent())
-                .thumbNail(s3UploadService.upload(courseRequestDto.getThumbNail(), "course/thumbnail"))
-                .video(s3UploadService.upload(courseRequestDto.getVideo(), "course/video"))
+                .thumbNail(s3UploadService.uploadImage(courseRequestDto.getThumbNail()))
+                .video(s3UploadService.uploadVideo(courseRequestDto.getVideo()))
                 .kakaoMember(kakaoMember)
                 .build();
 
@@ -185,8 +185,8 @@ public class CourseService {
         }
 
         if (courseRequestDto.getThumbNail() != null && courseRequestDto.getVideo() != null) {
-            String thumbnailUrl = s3UploadService.upload(courseRequestDto.getThumbNail(), "course/thumbnail");
-            String videoUrl = s3UploadService.upload(courseRequestDto.getVideo(), "course/video");
+            String thumbnailUrl = s3UploadService.uploadImage(courseRequestDto.getThumbNail());
+            String videoUrl = s3UploadService.uploadVideo(courseRequestDto.getVideo());
 
             course.editCourseMedia(thumbnailUrl, videoUrl);
         }
@@ -211,6 +211,8 @@ public class CourseService {
             throw new RuntimeException("작성자가 아닙니다.");
         }
 
+        s3UploadService.delete(course.getThumbNail());
+        s3UploadService.delete(course.getVideo());
         reviewRepository.deleteByCourse(course);
         courseRepository.deleteById(courseId);
 
