@@ -7,15 +7,10 @@ import lombok.Getter;
 @Builder
 public class CourseListResponseDto {
 
-    private Long courseId;
-
+    private Long course_id;
     private String title;
-
     private String content;
-
     private String thumbNail;
-
-    private String video;
-
-    private Double star;
+    private Double starAverage;
+    private Long reviewCount;
 }

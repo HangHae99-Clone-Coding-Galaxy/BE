@@ -10,10 +10,7 @@ import java.util.List;
 public interface ReviewRepository extends JpaRepository<Reviews, Long> {
 
     List<Reviews> findAllByKakaoMember(KakaoMembers kakaoMember);
-
     List<Reviews> findAllByCourse(Courses course);
-
-    boolean existsByCourse(Courses courses);
-
     void deleteByCourse(Courses course);
+    Long countByCourse(Courses courses);
 }
