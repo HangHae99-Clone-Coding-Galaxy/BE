@@ -9,20 +9,14 @@ import java.util.List;
 @Builder
 public class CourseResponseDto {
 
-    private Long courseId;
-
+    private Long course_id;
     private String title;
-
     private String content;
-
-    // imageList?
-    private List<String> image;
-
+    private String thumbNail;
     private String video;
-
-    // reviewList 추가
-
-    private Long subscribeCount;
-
-    private String nickname;
+    private double starAverage;
+    private int price;
+    private boolean paycheck;
+    private List<ReviewResponseDto>reviewList;
+    private Long reviewCount;
 }

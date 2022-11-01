@@ -1,8 +1,6 @@
 package com.sparta.coding_galaxy_be.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sparta.coding_galaxy_be.dto.requestDto.EditMyInfoRequestDto;
-import com.sparta.coding_galaxy_be.dto.responseDto.MypageResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

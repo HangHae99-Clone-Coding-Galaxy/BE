@@ -1,5 +1,6 @@
 package com.sparta.coding_galaxy_be.entity;
 
+import com.sparta.coding_galaxy_be.dto.requestDto.ReviewRequestDto;
 import com.sparta.coding_galaxy_be.util.TimeStamped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +11,7 @@ import javax.persistence.*;
 
 @Getter
 @Builder
-@Entity(name = "review")
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 public class Reviews extends TimeStamped {
@@ -26,16 +27,16 @@ public class Reviews extends TimeStamped {
     @Column(name = "comment")
     private String comment;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = false)
     private Courses course;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "kakaomember_id", nullable = false)
     private KakaoMembers kakaoMember;
 
-    public void updateReview(Long star, String comment) {
-        this.star = star;
-        this.comment = comment;
+    public void updateReview(ReviewRequestDto reviewRequestDto) {
+        this.star = reviewRequestDto.getStar();
+        this.comment = reviewRequestDto.getComment();
     }
 }

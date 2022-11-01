@@ -12,25 +12,27 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/reviews")
+@RequestMapping("/api/courses")
 public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @PostMapping("/{course_id}")
-    public ResponseEntity<?> createReview(@PathVariable Long courseId, @RequestBody ReviewRequestDto reviewRequestDto,
+    @PostMapping("/{course_id}/reviews/create")
+    public ResponseEntity<?> createReview(@PathVariable(name = "course_id") Long courseId, @RequestBody ReviewRequestDto reviewRequestDto,
                                           @AuthenticationPrincipal KakaoMemberDetailsImpl kakaoMemberDetailsimpl) {
         return reviewService.createReview(courseId, reviewRequestDto, kakaoMemberDetailsimpl.getKakaoMember());
     }
 
-    @PutMapping("/{review_id}")
-    public ResponseEntity<?> editReview(@PathVariable Long reviewId,
-                                        @RequestBody ReviewRequestDto reviewRequestDto) {
-        return reviewService.editReview(reviewId, reviewRequestDto);
+    @PutMapping("/{course_id}/reviews/edit")
+    public ResponseEntity<?> editReview(@PathVariable(name = "course_id") Long courseId, @RequestParam(value = "review-id") Long reviewId,
+                                        @RequestBody ReviewRequestDto reviewRequestDto,
+                                        @AuthenticationPrincipal KakaoMemberDetailsImpl kakaoMemberDetailsimpl) {
+        return reviewService.editReview(courseId, reviewId, reviewRequestDto ,kakaoMemberDetailsimpl.getKakaoMember());
     }
 
-    @DeleteMapping("/{review_id}")
-    public ResponseEntity<?> removeReview(@PathVariable Long reviewId){
-        return reviewService.removeReview(reviewId);
+    @DeleteMapping("/{course_id}/reviews/remove")
+    public ResponseEntity<?> deleteReview(@PathVariable(name = "course_id") Long courseId, @RequestParam(value = "review-id") Long reviewId,
+                                          @AuthenticationPrincipal KakaoMemberDetailsImpl kakaoMemberDetailsimpl){
+        return reviewService.deleteReview(courseId, reviewId, kakaoMemberDetailsimpl.getKakaoMember());
     }
 }

@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Payment {
+public class Payments {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,34 +21,34 @@ public class Payment {
     private String paymentId;
 
     @Column
-    private String item_name;
+    private String itemName;
 
     @Column
-    private Long item_code;
+    private Long itemCode;
 
     @Column
-    private String created_at;
+    private String createdAt;
 
     @Column
-    private String approved_at;
+    private String approvedAt;
 
     @Column
     private int amount;
 
     @Column
-    private String payment_method_type;
+    private String paymentMethodType;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "kakaomember_id", nullable = false)
     private KakaoMembers kakaoMember;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = false)
     private Courses course;
 
     public void updatePayment(KakaoPayApprovalResponseDto kakaoPayApprovalResponseDto){
-        this.created_at = kakaoPayApprovalResponseDto.getCreated_at();
-        this.approved_at = kakaoPayApprovalResponseDto.getApproved_at();
-        this.payment_method_type = kakaoPayApprovalResponseDto.getPayment_method_type();
+        this.createdAt = kakaoPayApprovalResponseDto.getCreated_at();
+        this.approvedAt = kakaoPayApprovalResponseDto.getApproved_at();
+        this.paymentMethodType = kakaoPayApprovalResponseDto.getPayment_method_type();
     }
 }

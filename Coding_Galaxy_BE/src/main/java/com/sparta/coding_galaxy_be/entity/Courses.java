@@ -1,5 +1,6 @@
 package com.sparta.coding_galaxy_be.entity;
 
+import com.sparta.coding_galaxy_be.dto.requestDto.CourseRequestDto;
 import com.sparta.coding_galaxy_be.util.TimeStamped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,11 +8,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Getter
 @Builder
-@Entity(name = "course")
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 public class Courses extends TimeStamped {
@@ -29,9 +29,8 @@ public class Courses extends TimeStamped {
 
     // imageList??
     // 썸네일??
-    @Column(name = "image")
-    @ElementCollection
-    private List<String> image;
+    @Column(name = "thumbNail")
+    private String thumbNail;
 
     @Column(name = "video")
     private String video;
@@ -40,14 +39,20 @@ public class Courses extends TimeStamped {
     private int price;
     
     // 작성자 mapping 추가
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "kakaomember_id")
+    private KakaoMembers kakaoMember;
     
     // review 양방향 처리 질문 필요
     // 우선 단방향 처리 예정
 
-    public void updateCourse(String title, String content, List<String> image, String video) {
-        this.title = title;
-        this.content = content;
-        this.image = image;
-        this.video = video;
+    public void editCourseDetail(CourseRequestDto courseRequestDto) {
+        this.title = courseRequestDto.getTitle();
+        this.content = courseRequestDto.getContent();
+    }
+
+    public void editCourseMedia(String thumbnailUrl, String videoUrl) {
+        this.thumbNail = thumbnailUrl;
+        this.video = videoUrl;
     }
 }
