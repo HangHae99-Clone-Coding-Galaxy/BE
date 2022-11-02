@@ -58,7 +58,7 @@ public class MypageService {
 
     public ResponseEntity<?> getMyPayment(Members member) {
 
-        List<Payments> paymentList = paymentRepository.findAllByMember(member);
+        List<Payments> paymentList = paymentRepository.findAllByMemberOrderByCreatedAtDesc(member);
         List<PaymentResponseDto> paymentResponseDtoList = new ArrayList<>();
 
         for (Payments payment : paymentList) {
@@ -71,6 +71,7 @@ public class MypageService {
                             .approved_at(payment.getApprovedAt())
                             .amount(payment.getAmount())
                             .payment_method_type(payment.getPaymentMethodType())
+                            .paycheck(payment.isPaycheck())
                             .build()
             );
         }
@@ -80,7 +81,7 @@ public class MypageService {
 
     public ResponseEntity<?> getMyReviews(Members member) {
 
-        List<Reviews> reviewsList = reviewRepository.findAllByMember(member);
+        List<Reviews> reviewsList = reviewRepository.findAllByMemberOrderByPostedAtDesc(member);
         List<ReviewResponseDto> reviewResponseDtoList = new ArrayList<>();
 
         for (Reviews review : reviewsList) {

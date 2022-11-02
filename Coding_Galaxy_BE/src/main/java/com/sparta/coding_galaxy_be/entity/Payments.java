@@ -37,6 +37,9 @@ public class Payments {
     @Column
     private String paymentMethodType;
 
+    @Column
+    private boolean paycheck;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Members member;
@@ -49,5 +52,6 @@ public class Payments {
         this.createdAt = kakaoPayApprovalResponseDto.getCreated_at();
         this.approvedAt = kakaoPayApprovalResponseDto.getApproved_at();
         this.paymentMethodType = kakaoPayApprovalResponseDto.getPayment_method_type();
+        this.paycheck = true;
     }
 }

@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface ReviewRepository extends JpaRepository<Reviews, Long> {
 
-    List<Reviews> findAllByMember(Members Member);
+    List<Reviews> findAllByMemberOrderByPostedAtDesc(Members Member);
     List<Reviews> findAllByCourse(Courses course);
     List<Reviews> findAllByCourseOrderByReviewIdDesc(Courses course);
     void deleteByCourse(Courses course);
