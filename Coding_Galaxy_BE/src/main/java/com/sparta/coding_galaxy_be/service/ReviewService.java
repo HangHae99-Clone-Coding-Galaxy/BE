@@ -4,8 +4,8 @@ import com.sparta.coding_galaxy_be.dto.requestDto.ReviewRequestDto;
 import com.sparta.coding_galaxy_be.entity.Courses;
 import com.sparta.coding_galaxy_be.entity.Members;
 import com.sparta.coding_galaxy_be.entity.Reviews;
-import com.sparta.coding_galaxy_be.repository.CourseRepository;
 import com.sparta.coding_galaxy_be.repository.ReviewRepository;
+import com.sparta.coding_galaxy_be.util.Validation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +18,11 @@ import javax.transaction.Transactional;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
-    private final CourseRepository courseRepository;
+    private final Validation validation;
 
     public ResponseEntity<?> createReview(Long courseId, ReviewRequestDto reviewRequestDto, Members member) {
 
-        Courses course = courseRepository.findById(courseId).orElseThrow(
-                () -> new RuntimeException("강의가 존재하지 않습니다.")
-        );
+        Courses course = validation.validateCourse(courseId);
 
         Reviews review = Reviews.builder()
                 .star(reviewRequestDto.getStar())
@@ -41,15 +39,11 @@ public class ReviewService {
     @Transactional
     public ResponseEntity<?> editReview(Long courseId, Long reviewId, ReviewRequestDto reviewRequestDto, Members member) {
 
-        if (!courseRepository.existsByCourseId(courseId)) throw new RuntimeException("강의가 존재하지 않습니다.");
+        validation.validateExistsCourse(courseId);
 
-        Reviews review = reviewRepository.findById(reviewId).orElseThrow(
-                () -> new RuntimeException("리뷰가 존재하지 않습니다.")
-        );
+        Reviews review = validation.validateReview(reviewId);
 
-        if(!member.getEmail().equals(review.getMember().getEmail())){
-            throw new RuntimeException("작성자가 아닙니다.");
-        }
+        validation.validateWriterOfReview(review, member);
 
         review.updateReview(reviewRequestDto);
 
@@ -58,15 +52,11 @@ public class ReviewService {
 
     public ResponseEntity<?> deleteReview(Long courseId, Long reviewId, Members member) {
 
-        if (!courseRepository.existsByCourseId(courseId)) throw new RuntimeException("강의가 존재하지 않습니다.");
+        validation.validateExistsCourse(courseId);
 
-        Reviews review = reviewRepository.findById(reviewId).orElseThrow(
-                () -> new RuntimeException("리뷰가 존재하지 않습니다.")
-        );
+        Reviews review = validation.validateReview(reviewId);
 
-        if(!member.getEmail().equals(review.getMember().getEmail())){
-            throw new RuntimeException("작성자가 아닙니다.");
-        }
+        validation.validateWriterOfReview(review, member);
 
         reviewRepository.deleteById(reviewId);
 

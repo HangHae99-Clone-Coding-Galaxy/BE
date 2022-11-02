@@ -40,7 +40,7 @@ public class MypageService {
     }
 
     @Transactional
-    public ResponseEntity<?> editMyInfo(EditMyInfoRequestDto editMyInfoRequestDto, Members member) throws IOException {
+    public ResponseEntity<?> editMyInfo(EditMyInfoRequestDto editMyInfoRequestDto, Members member) {
 
         if (editMyInfoRequestDto.getProfileImage() != null) {
             String imageUrl = s3UploadService.uploadImage(editMyInfoRequestDto.getProfileImage());
@@ -64,7 +64,7 @@ public class MypageService {
         for (Payments payment : paymentList) {
             paymentResponseDtoList.add(
                     PaymentResponseDto.builder()
-                            .paymentId(payment.getPaymentId().toString())
+                            .paymentId(payment.getPaymentId())
                             .item_name(payment.getItemName())
                             .item_code(payment.getItemCode())
                             .created_at(payment.getCreatedAt())

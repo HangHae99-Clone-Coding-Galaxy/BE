@@ -11,6 +11,7 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.sparta.coding_galaxy_be.exception.CustomExceptions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -63,7 +64,7 @@ public class S3UploadService {
                     .withCannedAcl(CannedAccessControlList.PublicRead));
             imageUrl = (s3Client.getUrl(bucket + "/post/image", fileName).toString());
         } catch (IOException e) {
-            throw new RuntimeException("테스트 런타임 예외");
+            throw new CustomExceptions.UploadFailException();
         }
 
         return imageUrl;
@@ -83,7 +84,7 @@ public class S3UploadService {
                     .withCannedAcl(CannedAccessControlList.PublicRead));
             videoUrl = (s3Client.getUrl(bucket + "/post/media", fileName).toString());
         } catch (IOException e) {
-            throw new RuntimeException("테스트 런타임 예외");
+            throw new CustomExceptions.UploadFailException();
         }
 
         return videoUrl;

@@ -1,6 +1,5 @@
 package com.sparta.coding_galaxy_be.controller;
 
-
 import com.sparta.coding_galaxy_be.dto.requestDto.CourseListRequestDto;
 import com.sparta.coding_galaxy_be.dto.requestDto.CourseRequestDto;
 import com.sparta.coding_galaxy_be.entity.MemberDetailsImpl;
@@ -9,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/courses")
@@ -37,7 +34,7 @@ public class CourseController {
 
     @PostMapping("/create")
     public ResponseEntity<?> createCoures(@ModelAttribute CourseRequestDto courseRequestDto,
-                                          @AuthenticationPrincipal MemberDetailsImpl memberDetails) throws IOException {
+                                          @AuthenticationPrincipal MemberDetailsImpl memberDetails) {
         return courseService.createCourse(courseRequestDto, memberDetails.getMember());
     }
 
