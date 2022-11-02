@@ -25,7 +25,6 @@ public class CourseService {
 
     private final CourseRepository courseRepository;
     private final ReviewRepository reviewRepository;
-    private final PaymentRepository paymentRepository;
     private final S3UploadService s3UploadService;
     private final Validation validation;
 
@@ -33,14 +32,14 @@ public class CourseService {
 
         List<Courses> coursesList = courseRepository.findAll();
 
-        List<Reviews> reviewsList = reviewRepository.findTop5ByStarOrderByReviewIdDesc(5L);
+//        List<Reviews> reviewsList = reviewRepository.findTop5ByStarOrderByReviewIdDesc(5L);
+//
+//        AllCoursesResponseDto allCoursesResponseDto = AllCoursesResponseDto.builder()
+//                .courseListResponseDtoList(getCourseListResponseDto(coursesList))
+//                .reviewList(getReviewResponseDtoList(reviewsList))
+//                .build();
 
-        AllCoursesResponseDto allCoursesResponseDto = AllCoursesResponseDto.builder()
-                .courseListResponseDtoList(getCourseListResponseDto(coursesList))
-                .reviewList(getReviewResponseDtoList(reviewsList))
-                .build();
-
-        return new ResponseEntity<>(allCoursesResponseDto, HttpStatus.OK);
+        return new ResponseEntity<>(getCourseListResponseDto(coursesList), HttpStatus.OK);
     }
 
     public ResponseEntity<?> searchCourse(CourseListRequestDto courseListRequestDto) {
