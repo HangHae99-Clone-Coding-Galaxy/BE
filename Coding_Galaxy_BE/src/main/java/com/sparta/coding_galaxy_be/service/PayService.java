@@ -8,10 +8,10 @@ import com.sparta.coding_galaxy_be.dto.responseDto.KakaoPayApprovalResponseDto;
 import com.sparta.coding_galaxy_be.entity.Courses;
 import com.sparta.coding_galaxy_be.entity.Members;
 import com.sparta.coding_galaxy_be.entity.Payments;
-import com.sparta.coding_galaxy_be.exception.CustomExceptions;
-import com.sparta.coding_galaxy_be.repository.CourseRepository;
 import com.sparta.coding_galaxy_be.repository.PaymentRepository;
+import com.sparta.coding_galaxy_be.util.Validation;
 import lombok.RequiredArgsConstructor;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -25,31 +25,54 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class KakaoPayService {
+public class PayService {
 
-    private final CourseRepository courseRepository;
     private final PaymentRepository paymentRepository;
+    private final Validation validation;
 
     @Value("${admin-key}")
     private String adminKey;
 
     @Transactional
-    public ResponseEntity<?> paymentReady(Long course_id, Members member) throws JsonProcessingException {
+    public ResponseEntity<?> payment(Long courseId, Members member) {
+
+        Courses course = validation.validateCourse(courseId);
+
+        Payments payment = Payments.builder()
+                .paymentId(UUID.randomUUID().toString())
+                .itemName(course.getTitle())
+                .itemCode(courseId)
+                .createdAt(DateTime.now().toString())
+                .approvedAt(DateTime.now().toString())
+                .amount(course.getPrice())
+                .paymentMethodType("test")
+                .paycheck(true)
+                .member(member)
+                .course(course)
+                .build();
+
+        paymentRepository.save(payment);
+
+        return new ResponseEntity<>("결제가 완료되었습니다.", HttpStatus.OK);
+    }
+
+
+    @Transactional
+    public ResponseEntity<?> paymentReady(Long courseId, Members member) throws JsonProcessingException {
 
         //상품 관련 내용을 Course 객체에 저장
-        Courses course = courseRepository.findById(course_id).orElseThrow(
-                CustomExceptions.NotFoundCourseException::new
-        );
+        Courses course = validation.validateCourse(courseId);
 
         //Payment 객체 생성하여 결제 관련 정보 저장
         Payments payment = Payments.builder()
                 .paymentId(UUID.randomUUID().toString())
                 .itemName(course.getTitle())
-                .itemCode(course_id)
+                .itemCode(courseId)
                 .createdAt(null)
                 .approvedAt(null)
                 .amount(course.getPrice())
                 .paymentMethodType(null)
+                .paycheck(false)
                 .member(member)
                 .course(course)
                 .build();
@@ -63,13 +86,13 @@ public class KakaoPayService {
         httpBody.add("partner_order_id", payment.getPaymentId());
         httpBody.add("partner_user_id", member.getNickname());
         httpBody.add("item_name", course.getTitle());
-        httpBody.add("item_code", course_id.toString());
+        httpBody.add("item_code", courseId.toString());
         httpBody.add("quantity", "1");
         httpBody.add("total_amount", String.valueOf(course.getPrice()));
         httpBody.add("tax_free_amount", "0");
         httpBody.add("approval_url", "http://localhost:8080/api/mypage/payment");
-        httpBody.add("cancel_url", "http://localhost:8080/api/courses/" + course_id);
-        httpBody.add("fail_url", "http://localhost:8080/api/courses/" + course_id);
+        httpBody.add("cancel_url", "http://localhost:8080/api/courses/" + courseId);
+        httpBody.add("fail_url", "http://localhost:8080/api/courses/" + courseId);
 
         HttpEntity<MultiValueMap<String, String>> paymentReadyRequest = new HttpEntity<>(httpBody, httpHeaders);
         RestTemplate restTemplate = new RestTemplate();
@@ -80,7 +103,6 @@ public class KakaoPayService {
                 paymentReadyRequest,
                 String.class
         );
-
 
         //전달 받은 tid, redirect_url, 주문번호를 저장하여 반환함
         String responseBody = responseEntity.getBody();
@@ -102,9 +124,7 @@ public class KakaoPayService {
     public ResponseEntity<?> paymentRequest(KakaoPayRequestDto kakaoPayRequestDto, Members member) throws JsonProcessingException {
 
         //결제 내역을 찾아옴
-        Payments payment = paymentRepository.findById(kakaoPayRequestDto.getPartner_order_id()).orElseThrow(
-                CustomExceptions.NotFoundPaymentException::new
-        );
+        Payments payment = validation.validatePayment(kakaoPayRequestDto.getPartner_order_id());
 
         //카카오 페이 서버(https://kapi.kakao.com/v1/payment/approve) 정보 전달
         HttpHeaders httpHeaders = new HttpHeaders();

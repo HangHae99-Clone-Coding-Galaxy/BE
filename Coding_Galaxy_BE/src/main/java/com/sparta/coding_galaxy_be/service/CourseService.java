@@ -66,7 +66,7 @@ public class CourseService {
                 .video(course.getVideo())
                 .starAverage(getStarAverage(course, totalReview))
                 .price(course.getPrice())
-                .paycheck(paymentRepository.existsByCourseAndMember(course, member))
+                .paycheck(validation.validatePaycheck(course, member))
                 .reviewList(getReviewResponseDtoList(reviewsList))
                 .reviewCount(totalReview)
                 .build();

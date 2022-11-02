@@ -14,4 +14,5 @@ public class PaymentResponseDto {
     private String approved_at;
     private int amount;
     private String payment_method_type;
+    private boolean paycheck;
 }
