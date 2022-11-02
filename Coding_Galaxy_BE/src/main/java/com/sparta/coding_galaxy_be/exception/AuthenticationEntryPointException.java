@@ -14,7 +14,7 @@ public class AuthenticationEntryPointException implements AuthenticationEntryPoi
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
-        response.setContentType("application/json;charset-UTF-8");
+        response.setContentType("application/json;charset=UTF-8");
         response.getWriter().println(
                 new ObjectMapper().writeValueAsString(
                         ErrorCodes.NOT_AUTHENTICATION_ENTRY
