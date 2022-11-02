@@ -8,6 +8,7 @@ import com.sparta.coding_galaxy_be.entity.Authority;
 import com.sparta.coding_galaxy_be.entity.MemberDetailsImpl;
 import com.sparta.coding_galaxy_be.entity.Members;
 import com.sparta.coding_galaxy_be.entity.RefreshToken;
+import com.sparta.coding_galaxy_be.exception.CustomExceptions;
 import com.sparta.coding_galaxy_be.repository.MembersRepository;
 import com.sparta.coding_galaxy_be.repository.RefreshTokenRepository;
 import com.sparta.coding_galaxy_be.security.JwtAuthFilter;
@@ -42,7 +43,7 @@ public class MemberService {
     public ResponseEntity<?> signup(MemberRequestDto memberRequestDto) {
 
         if (membersRepository.existsByEmail(memberRequestDto.getEmail())){
-            throw new RuntimeException("중복된 이메일입니다.");
+            throw new CustomExceptions.DuplicatedEmailException();
         }
 
         Members member = Members.builder()
@@ -65,11 +66,10 @@ public class MemberService {
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
         Members member = membersRepository.findByEmail(authentication.getName()).orElseThrow(
-                () -> new RuntimeException("가입되지 않은 회원입니다.")
+                CustomExceptions.NotFoundMemberException::new
         );
 
-        if(!passwordEncoder.matches(memberRequestDto.getPassword(), member.getPassword()))
-            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+        if(!passwordEncoder.matches(memberRequestDto.getPassword(), member.getPassword())) throw new CustomExceptions.NotMatchedPasswordException();
 
         TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
 
@@ -98,10 +98,10 @@ public class MemberService {
         KakaoMemberInformationDto kakaoMemberInformationDto = kakaoOauth.getKakaoMemberInfo(kakaoAccessToken);
 
         Long kakaoMemberId = kakaoMemberInformationDto.getKakaoMemberId();
-        Members kakaoMember = membersRepository.findByKakaoMemberId(kakaoMemberId).orElse(null);
+        Members member = membersRepository.findByKakaoMemberId(kakaoMemberId).orElse(null);
 
-        if (kakaoMember == null){
-            kakaoMember = Members.builder()
+        if (member == null){
+            member = Members.builder()
                     .kakaoMemberId(kakaoMemberInformationDto.getKakaoMemberId())
                     .email(kakaoMemberInformationDto.getEmail())
                     .profileImage(kakaoMemberInformationDto.getProfile_image_url())
@@ -110,10 +110,10 @@ public class MemberService {
                     .authority(Authority.ROLE_MEMBER)
                     .build();
 
-            membersRepository.save(kakaoMember);
+            membersRepository.save(member);
         }
 
-        UserDetails kakaoUserDetails = new MemberDetailsImpl(kakaoMember);
+        UserDetails kakaoUserDetails = new MemberDetailsImpl(member);
         Authentication authentication = new UsernamePasswordAuthenticationToken(kakaoUserDetails, null, kakaoUserDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -128,12 +128,18 @@ public class MemberService {
 
         refreshTokenRepository.save(refreshToken);
 
+        tokenToHeader(tokenDto, httpServletResponse, member);
+
+        return new ResponseEntity<>("로그인 성공", HttpStatus.OK);
+    }
+
+    public void tokenToHeader(TokenDto tokenDto, HttpServletResponse httpServletResponse, Members member){
+
         httpServletResponse.setHeader(JwtAuthFilter.AUTHORIZATION_HEADER, JwtAuthFilter.BEARER_PREFIX + tokenDto.getAccessToken());
         httpServletResponse.setHeader("RefreshToken", tokenDto.getRefreshToken());
         httpServletResponse.setHeader("AccessTokenExpireTime", tokenDto.getAccessTokenExpiresIn().toString());
-        httpServletResponse.setHeader("Nickname", kakaoMember.getNickname());
-        httpServletResponse.setHeader("Authority", kakaoMember.getAuthority().toString());
+        httpServletResponse.setHeader("Nickname", member.getNickname());
+        httpServletResponse.setHeader("Authority", member.getAuthority().toString());
 
-        return new ResponseEntity<>("로그인 성공", HttpStatus.OK);
     }
 }

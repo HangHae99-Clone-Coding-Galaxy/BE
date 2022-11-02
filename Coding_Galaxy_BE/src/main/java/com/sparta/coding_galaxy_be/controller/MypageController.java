@@ -23,7 +23,7 @@ public class MypageController {
     }
 
     @PatchMapping("/edit")
-    public ResponseEntity<?> editMyInfo(@ModelAttribute EditMyInfoRequestDto editMyInfoRequestDto, @AuthenticationPrincipal MemberDetailsImpl memberDetails) throws IOException {
+    public ResponseEntity<?> editMyInfo(@ModelAttribute EditMyInfoRequestDto editMyInfoRequestDto, @AuthenticationPrincipal MemberDetailsImpl memberDetails) {
         return mypageService.editMyInfo(editMyInfoRequestDto,memberDetails.getMember());
     }
 

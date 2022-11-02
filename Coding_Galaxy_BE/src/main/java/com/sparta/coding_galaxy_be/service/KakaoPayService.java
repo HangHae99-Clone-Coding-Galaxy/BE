@@ -8,6 +8,7 @@ import com.sparta.coding_galaxy_be.dto.responseDto.KakaoPayApprovalResponseDto;
 import com.sparta.coding_galaxy_be.entity.Courses;
 import com.sparta.coding_galaxy_be.entity.Members;
 import com.sparta.coding_galaxy_be.entity.Payments;
+import com.sparta.coding_galaxy_be.exception.CustomExceptions;
 import com.sparta.coding_galaxy_be.repository.CourseRepository;
 import com.sparta.coding_galaxy_be.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,7 @@ public class KakaoPayService {
 
         //상품 관련 내용을 Course 객체에 저장
         Courses course = courseRepository.findById(course_id).orElseThrow(
-                () -> new RuntimeException("강의가 존재하지 않습니다.")
+                CustomExceptions.NotFoundCourseException::new
         );
 
         //Payment 객체 생성하여 결제 관련 정보 저장
@@ -102,7 +103,7 @@ public class KakaoPayService {
 
         //결제 내역을 찾아옴
         Payments payment = paymentRepository.findById(kakaoPayRequestDto.getPartner_order_id()).orElseThrow(
-                () -> new RuntimeException("결제 내역을 찾을 수 없습니다.")
+                CustomExceptions.NotFoundPaymentException::new
         );
 
         //카카오 페이 서버(https://kapi.kakao.com/v1/payment/approve) 정보 전달
