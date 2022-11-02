@@ -13,19 +13,20 @@ import javax.persistence.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class KakaoMembers {
+public class Members {
 
     @Id
-    @Column(name = "kakaomember_id", nullable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "member_id")
+    private Long MemberId;
+
+    @Column(unique = true)
     private Long kakaoMemberId;
 
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false, unique = true)
-    private String name;
-
-    @Column(nullable = false)
+    @Column
     private String profileImage;
 
     @Column(nullable = false)

@@ -16,9 +16,8 @@ import javax.persistence.*;
 public class Payments {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "payment_id", nullable = false)
-    private Long paymentId;
+    @Column(name = "payment_id")
+    private String paymentId;
 
     @Column
     private String itemName;
@@ -39,11 +38,11 @@ public class Payments {
     private String paymentMethodType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "kakaomember_id", nullable = false)
-    private KakaoMembers kakaoMember;
+    @JoinColumn(name = "member_id")
+    private Members member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "course_id", nullable = false)
+    @JoinColumn(name = "course_id")
     private Courses course;
 
     public void updatePayment(KakaoPayApprovalResponseDto kakaoPayApprovalResponseDto){
