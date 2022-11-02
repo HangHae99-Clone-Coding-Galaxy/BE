@@ -2,10 +2,7 @@ package com.sparta.coding_galaxy_be.service;
 
 import com.sparta.coding_galaxy_be.dto.requestDto.CourseListRequestDto;
 import com.sparta.coding_galaxy_be.dto.requestDto.CourseRequestDto;
-import com.sparta.coding_galaxy_be.dto.responseDto.AllCoursesResponseDto;
-import com.sparta.coding_galaxy_be.dto.responseDto.CourseListResponseDto;
-import com.sparta.coding_galaxy_be.dto.responseDto.CourseResponseDto;
-import com.sparta.coding_galaxy_be.dto.responseDto.ReviewResponseDto;
+import com.sparta.coding_galaxy_be.dto.responseDto.*;
 import com.sparta.coding_galaxy_be.entity.*;
 import com.sparta.coding_galaxy_be.repository.CourseRepository;
 import com.sparta.coding_galaxy_be.repository.PaymentRepository;
@@ -26,6 +23,7 @@ public class CourseService {
     private final CourseRepository courseRepository;
     private final ReviewRepository reviewRepository;
     private final S3UploadService s3UploadService;
+    private final PaymentRepository paymentRepository;
     private final Validation validation;
 
     public ResponseEntity<?> getAllCourses() {
@@ -57,6 +55,25 @@ public class CourseService {
 
         Long totalReview = reviewRepository.countByCourse(course);
 
+        List<Payments> paymentsList = paymentRepository.findAllByCourse(course);
+        List<PaymentResponseDto> paymentResponseDtoList = new ArrayList<>();
+
+        for (Payments payments : paymentsList){
+            PaymentResponseDto paymentResponseDto = PaymentResponseDto.builder()
+                    .paymentId(payments.getPaymentId())
+                    .item_name(payments.getItemName())
+                    .item_code(payments.getItemCode())
+                    .created_at(payments.getCreatedAt())
+                    .approved_at(payments.getApprovedAt())
+                    .amount(payments.getAmount())
+                    .payment_method_type(payments.getPaymentMethodType())
+                    .paycheck(payments.isPaycheck())
+                    .nickname(payments.getMember().getNickname())
+                    .build();
+
+            paymentResponseDtoList.add(paymentResponseDto);
+        }
+
         CourseResponseDto courseResponseDto = CourseResponseDto.builder()
                 .course_id(course.getCourseId())
                 .title(course.getTitle())
@@ -68,6 +85,7 @@ public class CourseService {
                 .paycheck(validation.validatePaycheck(course, member))
                 .reviewList(getReviewResponseDtoList(reviewsList))
                 .reviewCount(totalReview)
+                .paymentsList(paymentResponseDtoList)
                 .build();
 
         return new ResponseEntity<>(courseResponseDto, HttpStatus.OK);
