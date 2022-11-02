@@ -4,10 +4,10 @@ import com.sparta.coding_galaxy_be.dto.requestDto.EditMyInfoRequestDto;
 import com.sparta.coding_galaxy_be.dto.responseDto.MypageResponseDto;
 import com.sparta.coding_galaxy_be.dto.responseDto.PaymentResponseDto;
 import com.sparta.coding_galaxy_be.dto.responseDto.ReviewResponseDto;
-import com.sparta.coding_galaxy_be.entity.KakaoMembers;
+import com.sparta.coding_galaxy_be.entity.Members;
 import com.sparta.coding_galaxy_be.entity.Payments;
 import com.sparta.coding_galaxy_be.entity.Reviews;
-import com.sparta.coding_galaxy_be.repository.KakaoMembersRepository;
+import com.sparta.coding_galaxy_be.repository.MembersRepository;
 import com.sparta.coding_galaxy_be.repository.PaymentRepository;
 import com.sparta.coding_galaxy_be.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,41 +24,41 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MypageService {
 
-    private final KakaoMembersRepository kakaoMembersRepository;
+    private final MembersRepository membersRepository;
     private final ReviewRepository reviewRepository;
     private final PaymentRepository paymentRepository;
     private final S3UploadService s3UploadService;
 
-    public ResponseEntity<?> getMypage(KakaoMembers kakaoMember) {
+    public ResponseEntity<?> getMypage(Members member) {
 
         MypageResponseDto mypageResponseDto = MypageResponseDto.builder()
-                .profileImage(kakaoMember.getProfileImage())
-                .nickname(kakaoMember.getNickname())
+                .profileImage(member.getProfileImage())
+                .nickname(member.getNickname())
                 .build();
 
         return new ResponseEntity<>(mypageResponseDto, HttpStatus.OK);
     }
 
     @Transactional
-    public ResponseEntity<?> editMyInfo(EditMyInfoRequestDto editMyInfoRequestDto, KakaoMembers kakaoMember) throws IOException {
+    public ResponseEntity<?> editMyInfo(EditMyInfoRequestDto editMyInfoRequestDto, Members member) throws IOException {
 
         if (editMyInfoRequestDto.getProfileImage() != null) {
             String imageUrl = s3UploadService.uploadImage(editMyInfoRequestDto.getProfileImage());
-            kakaoMember.editMyProfileImage(imageUrl);
+            member.editMyProfileImage(imageUrl);
         }
 
         if (editMyInfoRequestDto.getNickname() != null) {
-            kakaoMember.editMyNickname(editMyInfoRequestDto.getNickname());
+            member.editMyNickname(editMyInfoRequestDto.getNickname());
         }
 
-        kakaoMembersRepository.save(kakaoMember);
+        membersRepository.save(member);
 
         return new ResponseEntity<>("내 정보 변경 성공", HttpStatus.OK);
     }
 
-    public ResponseEntity<?> getMyPayment(KakaoMembers kakaoMember) {
+    public ResponseEntity<?> getMyPayment(Members member) {
 
-        List<Payments> paymentList = paymentRepository.findAllByKakaoMember(kakaoMember);
+        List<Payments> paymentList = paymentRepository.findAllByMember(member);
         List<PaymentResponseDto> paymentResponseDtoList = new ArrayList<>();
 
         for (Payments payment : paymentList) {
@@ -78,16 +78,16 @@ public class MypageService {
         return new ResponseEntity<>(paymentResponseDtoList, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> getMyReviews(KakaoMembers kakaoMember) {
+    public ResponseEntity<?> getMyReviews(Members member) {
 
-        List<Reviews> reviewsList = reviewRepository.findAllByKakaoMember(kakaoMember);
+        List<Reviews> reviewsList = reviewRepository.findAllByMember(member);
         List<ReviewResponseDto> reviewResponseDtoList = new ArrayList<>();
 
         for (Reviews review : reviewsList) {
             reviewResponseDtoList.add(
                     ReviewResponseDto.builder()
                             .review_id(review.getReviewId())
-                            .nickname(review.getKakaoMember().getNickname())
+                            .nickname(review.getMember().getNickname())
                             .star(review.getStar())
                             .comment(review.getComment())
                             .build()
