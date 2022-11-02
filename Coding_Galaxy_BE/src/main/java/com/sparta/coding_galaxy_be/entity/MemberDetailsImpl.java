@@ -7,22 +7,22 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class KakaoMemberDetailsImpl implements UserDetails {
+public class MemberDetailsImpl implements UserDetails {
 
-    private final KakaoMembers kakaoMember;
+    private final Members member;
 
-    public KakaoMemberDetailsImpl(KakaoMembers kakaoMember){
-        this.kakaoMember = kakaoMember;
+    public MemberDetailsImpl(Members member){
+        this.member = member;
     }
 
-    public KakaoMembers getKakaoMember(){
-        return kakaoMember;
+    public Members getMember(){
+        return member;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
-        Authority authority = kakaoMember.getAuthority();
+        Authority authority = member.getAuthority();
 
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(authority.toString());
 
@@ -34,12 +34,12 @@ public class KakaoMemberDetailsImpl implements UserDetails {
 
     @Override
     public String getPassword() {
-        return kakaoMember.getPassword();
+        return member.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return kakaoMember.getName();
+        return member.getEmail();
     }
 
     @Override

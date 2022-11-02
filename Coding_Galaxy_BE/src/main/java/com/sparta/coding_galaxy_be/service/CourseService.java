@@ -32,9 +32,9 @@ public class CourseService {
         List<Courses> coursesList = courseRepository.findAll();
         List<CourseListResponseDto> courseListResponseDtoList = new ArrayList<>();
 
-        Long totalStar = 0L;
-
         for (Courses course : coursesList) {
+
+            Long totalStar = 0L;
 
             Long totalReview = reviewRepository.countByCourse(course);
 
@@ -42,6 +42,9 @@ public class CourseService {
             for (Reviews review : reviewsList) {
                 totalStar = totalStar + review.getStar();
             }
+
+            System.out.println("total star" + totalStar);
+            System.out.println("total Review" + totalReview);
 
             Double starAverage = ((double) totalStar / (double) totalReview);
             if (totalReview == 0) starAverage = 0.0;
@@ -94,7 +97,7 @@ public class CourseService {
         return new ResponseEntity<>(courseListResponseDtoList, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> getCourse(Long courseId, KakaoMembers kakaoMember) {
+    public ResponseEntity<?> getCourse(Long courseId, Members member) {
 
         Courses course = courseRepository.findById(courseId).orElseThrow(
                 () -> new RuntimeException("강의가 존재하지 않습니다.")
@@ -109,7 +112,7 @@ public class CourseService {
             reviewResponseDtoList.add(
                     ReviewResponseDto.builder()
                             .review_id(review.getReviewId())
-                            .nickname(review.getKakaoMember().getNickname())
+                            .nickname(review.getMember().getNickname())
                             .star(review.getStar())
                             .comment(review.getComment())
                             .build()
@@ -129,7 +132,7 @@ public class CourseService {
                 .video(course.getVideo())
                 .starAverage(starAverage)
                 .price(course.getPrice())
-                .paycheck(paymentRepository.existsByCourseAndKakaoMember(course, kakaoMember))
+                .paycheck(paymentRepository.existsByCourseAndMember(course, member))
                 .reviewList(reviewResponseDtoList)
                 .reviewCount(totalReview)
                 .build();
@@ -137,14 +140,15 @@ public class CourseService {
         return new ResponseEntity<>(courseResponseDto, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> createCourse(CourseRequestDto courseRequestDto, KakaoMembers kakaoMember) throws IOException {
+    public ResponseEntity<?> createCourse(CourseRequestDto courseRequestDto, Members member) throws IOException {
 
         Courses course = Courses.builder()
                 .title(courseRequestDto.getTitle())
                 .content(courseRequestDto.getContent())
                 .thumbNail(s3UploadService.uploadImage(courseRequestDto.getThumbNail()))
                 .video(s3UploadService.uploadVideo(courseRequestDto.getVideo()))
-                .kakaoMember(kakaoMember)
+                .price(courseRequestDto.getPrice())
+                .member(member)
                 .build();
 
         courseRepository.save(course);
@@ -152,13 +156,13 @@ public class CourseService {
         return new ResponseEntity<>("강의 등록이 완료되었습니다", HttpStatus.OK);
     }
 
-    public ResponseEntity<?> getCourseForEdit(Long courseId, KakaoMembers kakaoMember) {
+    public ResponseEntity<?> getCourseForEdit(Long courseId, Members member) {
 
         Courses course = courseRepository.findById(courseId).orElseThrow(
                 () -> new RuntimeException("강의가 존재하지 않습니다.")
         );
 
-        if (!kakaoMember.getName().equals(course.getKakaoMember().getName())) {
+        if (!member.getEmail().equals(course.getMember().getEmail())) {
             throw new RuntimeException("작성자가 아닙니다.");
         }
 
@@ -174,24 +178,28 @@ public class CourseService {
     }
 
     @Transactional
-    public ResponseEntity<?> editCourse(Long courseId, CourseRequestDto courseRequestDto, KakaoMembers kakaoMember) throws IOException {
+    public ResponseEntity<?> editCourse(Long courseId, CourseRequestDto courseRequestDto, Members member){
 
         Courses course = courseRepository.findById(courseId).orElseThrow(
                 () -> new RuntimeException("강의가 존재하지 않습니다.")
         );
 
-        if (!kakaoMember.getName().equals(course.getKakaoMember().getName())) {
+        if (!member.getEmail().equals(course.getMember().getEmail())) {
             throw new RuntimeException("작성자가 아닙니다.");
         }
 
         if (courseRequestDto.getThumbNail() != null && courseRequestDto.getVideo() != null) {
+
             String thumbnailUrl = s3UploadService.uploadImage(courseRequestDto.getThumbNail());
             String videoUrl = s3UploadService.uploadVideo(courseRequestDto.getVideo());
+
+            s3UploadService.delete(course.getThumbNail());
+            s3UploadService.delete(course.getVideo());
 
             course.editCourseMedia(thumbnailUrl, videoUrl);
         }
 
-        if (courseRequestDto.getTitle() != null && courseRequestDto.getContent() != null) {
+        if (courseRequestDto.getTitle() != null && courseRequestDto.getContent() != null && courseRequestDto.getPrice() != 0) {
             course.editCourseDetail(courseRequestDto);
         }
 
@@ -201,19 +209,21 @@ public class CourseService {
     }
 
     @Transactional
-    public ResponseEntity<?> deleteCourse(Long courseId, KakaoMembers kakaoMember) {
+    public ResponseEntity<?> deleteCourse(Long courseId, Members member) {
 
         Courses course = courseRepository.findById(courseId).orElseThrow(
                 () -> new RuntimeException("강의가 존재하지 않습니다.")
         );
 
-        if (!kakaoMember.getName().equals(course.getKakaoMember().getName())) {
+        if (!member.getEmail().equals(course.getMember().getEmail())) {
             throw new RuntimeException("작성자가 아닙니다.");
         }
 
         s3UploadService.delete(course.getThumbNail());
         s3UploadService.delete(course.getVideo());
+
         reviewRepository.deleteByCourse(course);
+
         courseRepository.deleteById(courseId);
 
         return new ResponseEntity<>("강의 삭제가 완료되었습니다.", HttpStatus.OK);

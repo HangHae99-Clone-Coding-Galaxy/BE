@@ -1,9 +1,9 @@
 package com.sparta.coding_galaxy_be.security;
 
 import com.sparta.coding_galaxy_be.dto.TokenDto;
-import com.sparta.coding_galaxy_be.entity.KakaoMemberDetailsImpl;
-import com.sparta.coding_galaxy_be.entity.KakaoMembers;
-import com.sparta.coding_galaxy_be.repository.KakaoMembersRepository;
+import com.sparta.coding_galaxy_be.entity.MemberDetailsImpl;
+import com.sparta.coding_galaxy_be.entity.Members;
+import com.sparta.coding_galaxy_be.repository.MembersRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -30,12 +30,12 @@ public class TokenProvider {
     private static final long ACCESS_TOKEN_EXPIRATION_TIME = 1000 * 60 * 30;
     private static final long REFRESH_TOKEN_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 7;
 
-    private final KakaoMembersRepository kakaoMembersRepository;
+    private final MembersRepository membersRepository;
     private final Key key;
 
     @Autowired
-    public TokenProvider(@Value("${jwt.secret.key}") String secretKey, KakaoMembersRepository kakaoMembersRepository){
-        this.kakaoMembersRepository = kakaoMembersRepository;
+    public TokenProvider(@Value("${jwt.secret.key}") String secretKey, MembersRepository membersRepository){
+        this.membersRepository = membersRepository;
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
@@ -75,14 +75,14 @@ public class TokenProvider {
 
         Assert.notNull(claims.get(AUTHORITIES_KEY), "권한 정보가 없는 토큰입니다.");
 
-        String name = claims.getSubject();
-        KakaoMembers kakaoMember = kakaoMembersRepository.findByName(name).orElseThrow(
+        String email = claims.getSubject();
+        Members member = membersRepository.findByEmail(email).orElseThrow(
                 () -> new UsernameNotFoundException("유저를 찾을 수 없습니다.")
         );
 
-        KakaoMemberDetailsImpl kakaoMemberDetails = new KakaoMemberDetailsImpl(kakaoMember);
+        MemberDetailsImpl memberDetails = new MemberDetailsImpl(member);
 
-        return new UsernamePasswordAuthenticationToken(kakaoMemberDetails, null, kakaoMemberDetails.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(memberDetails, null, memberDetails.getAuthorities());
     }
 
     private Claims parseClaims(String accessToken){

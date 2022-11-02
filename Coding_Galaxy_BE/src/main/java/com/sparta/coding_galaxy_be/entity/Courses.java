@@ -40,8 +40,8 @@ public class Courses extends TimeStamped {
     
     // 작성자 mapping 추가
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "kakaomember_id")
-    private KakaoMembers kakaoMember;
+    @JoinColumn(name = "member_id")
+    private Members member;
     
     // review 양방향 처리 질문 필요
     // 우선 단방향 처리 예정
@@ -49,6 +49,7 @@ public class Courses extends TimeStamped {
     public void editCourseDetail(CourseRequestDto courseRequestDto) {
         this.title = courseRequestDto.getTitle();
         this.content = courseRequestDto.getContent();
+        this.price = courseRequestDto.getPrice();
     }
 
     public void editCourseMedia(String thumbnailUrl, String videoUrl) {

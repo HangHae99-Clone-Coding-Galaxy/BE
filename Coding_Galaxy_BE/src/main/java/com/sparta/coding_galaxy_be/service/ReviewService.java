@@ -2,7 +2,7 @@ package com.sparta.coding_galaxy_be.service;
 
 import com.sparta.coding_galaxy_be.dto.requestDto.ReviewRequestDto;
 import com.sparta.coding_galaxy_be.entity.Courses;
-import com.sparta.coding_galaxy_be.entity.KakaoMembers;
+import com.sparta.coding_galaxy_be.entity.Members;
 import com.sparta.coding_galaxy_be.entity.Reviews;
 import com.sparta.coding_galaxy_be.repository.CourseRepository;
 import com.sparta.coding_galaxy_be.repository.ReviewRepository;
@@ -20,7 +20,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final CourseRepository courseRepository;
 
-    public ResponseEntity<?> createReview(Long courseId, ReviewRequestDto reviewRequestDto, KakaoMembers kakaoMember) {
+    public ResponseEntity<?> createReview(Long courseId, ReviewRequestDto reviewRequestDto, Members member) {
 
         Courses course = courseRepository.findById(courseId).orElseThrow(
                 () -> new RuntimeException("강의가 존재하지 않습니다.")
@@ -29,7 +29,7 @@ public class ReviewService {
         Reviews review = Reviews.builder()
                 .star(reviewRequestDto.getStar())
                 .comment(reviewRequestDto.getComment())
-                .kakaoMember(kakaoMember)
+                .member(member)
                 .course(course)
                 .build();
 
@@ -39,7 +39,7 @@ public class ReviewService {
     }
 
     @Transactional
-    public ResponseEntity<?> editReview(Long courseId, Long reviewId, ReviewRequestDto reviewRequestDto, KakaoMembers kakaoMember) {
+    public ResponseEntity<?> editReview(Long courseId, Long reviewId, ReviewRequestDto reviewRequestDto, Members member) {
 
         if (!courseRepository.existsByCourseId(courseId)) throw new RuntimeException("강의가 존재하지 않습니다.");
 
@@ -47,7 +47,7 @@ public class ReviewService {
                 () -> new RuntimeException("리뷰가 존재하지 않습니다.")
         );
 
-        if(!kakaoMember.getName().equals(review.getKakaoMember().getName())){
+        if(!member.getEmail().equals(review.getMember().getEmail())){
             throw new RuntimeException("작성자가 아닙니다.");
         }
 
@@ -56,7 +56,7 @@ public class ReviewService {
         return new ResponseEntity<>("리뷰 수정이 완료되었습니다.", HttpStatus.OK);
     }
 
-    public ResponseEntity<?> deleteReview(Long courseId, Long reviewId, KakaoMembers kakaoMember) {
+    public ResponseEntity<?> deleteReview(Long courseId, Long reviewId, Members member) {
 
         if (!courseRepository.existsByCourseId(courseId)) throw new RuntimeException("강의가 존재하지 않습니다.");
 
@@ -64,7 +64,7 @@ public class ReviewService {
                 () -> new RuntimeException("리뷰가 존재하지 않습니다.")
         );
 
-        if(!kakaoMember.getName().equals(review.getKakaoMember().getName())){
+        if(!member.getEmail().equals(review.getMember().getEmail())){
             throw new RuntimeException("작성자가 아닙니다.");
         }
 

@@ -1,7 +1,7 @@
 package com.sparta.coding_galaxy_be.controller;
 
 import com.sparta.coding_galaxy_be.dto.requestDto.EditMyInfoRequestDto;
-import com.sparta.coding_galaxy_be.entity.KakaoMemberDetailsImpl;
+import com.sparta.coding_galaxy_be.entity.MemberDetailsImpl;
 import com.sparta.coding_galaxy_be.service.MypageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,22 +18,22 @@ public class MypageController {
     private final MypageService mypageService;
 
     @GetMapping
-    public ResponseEntity<?> getMypage(@AuthenticationPrincipal KakaoMemberDetailsImpl kakaoMemberDetails){
-        return mypageService.getMypage(kakaoMemberDetails.getKakaoMember());
+    public ResponseEntity<?> getMypage(@AuthenticationPrincipal MemberDetailsImpl memberDetails){
+        return mypageService.getMypage(memberDetails.getMember());
     }
 
     @PatchMapping("/edit")
-    public ResponseEntity<?> editMyInfo(@ModelAttribute EditMyInfoRequestDto editMyInfoRequestDto, @AuthenticationPrincipal KakaoMemberDetailsImpl kakaoMemberDetails) throws IOException {
-        return mypageService.editMyInfo(editMyInfoRequestDto,kakaoMemberDetails.getKakaoMember());
+    public ResponseEntity<?> editMyInfo(@ModelAttribute EditMyInfoRequestDto editMyInfoRequestDto, @AuthenticationPrincipal MemberDetailsImpl memberDetails) throws IOException {
+        return mypageService.editMyInfo(editMyInfoRequestDto,memberDetails.getMember());
     }
 
     @GetMapping("/payment")
-    public ResponseEntity<?> getMyPayment(@AuthenticationPrincipal KakaoMemberDetailsImpl kakaoMemberDetails){
-        return mypageService.getMyPayment(kakaoMemberDetails.getKakaoMember());
+    public ResponseEntity<?> getMyPayment(@AuthenticationPrincipal MemberDetailsImpl memberDetails){
+        return mypageService.getMyPayment(memberDetails.getMember());
     }
 
     @GetMapping("/reviews")
-    public ResponseEntity<?> getMyReviews(@AuthenticationPrincipal KakaoMemberDetailsImpl kakaoMemberDetails){
-        return mypageService.getMyReviews(kakaoMemberDetails.getKakaoMember());
+    public ResponseEntity<?> getMyReviews(@AuthenticationPrincipal MemberDetailsImpl memberDetails){
+        return mypageService.getMyReviews(memberDetails.getMember());
     }
 }

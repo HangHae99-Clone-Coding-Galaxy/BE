@@ -28,12 +28,12 @@ public class Reviews extends TimeStamped {
     private String comment;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "course_id", nullable = false)
+    @JoinColumn(name = "course_id")
     private Courses course;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "kakaomember_id", nullable = false)
-    private KakaoMembers kakaoMember;
+    @JoinColumn(name = "member_id")
+    private Members member;
 
     public void updateReview(ReviewRequestDto reviewRequestDto) {
         this.star = reviewRequestDto.getStar();
