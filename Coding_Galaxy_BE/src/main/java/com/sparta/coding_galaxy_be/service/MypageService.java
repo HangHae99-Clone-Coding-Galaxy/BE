@@ -40,7 +40,7 @@ public class MypageService {
     }
 
     @Transactional
-    public ResponseEntity<?> editMyInfo(EditMyInfoRequestDto editMyInfoRequestDto, Members member) throws IOException {
+    public ResponseEntity<?> editMyInfo(EditMyInfoRequestDto editMyInfoRequestDto, Members member) {
 
         if (editMyInfoRequestDto.getProfileImage() != null) {
             String imageUrl = s3UploadService.uploadImage(editMyInfoRequestDto.getProfileImage());
@@ -58,19 +58,20 @@ public class MypageService {
 
     public ResponseEntity<?> getMyPayment(Members member) {
 
-        List<Payments> paymentList = paymentRepository.findAllByMember(member);
+        List<Payments> paymentList = paymentRepository.findAllByMemberOrderByCreatedAtDesc(member);
         List<PaymentResponseDto> paymentResponseDtoList = new ArrayList<>();
 
         for (Payments payment : paymentList) {
             paymentResponseDtoList.add(
                     PaymentResponseDto.builder()
-                            .paymentId(payment.getPaymentId().toString())
+                            .paymentId(payment.getPaymentId())
                             .item_name(payment.getItemName())
                             .item_code(payment.getItemCode())
                             .created_at(payment.getCreatedAt())
                             .approved_at(payment.getApprovedAt())
                             .amount(payment.getAmount())
                             .payment_method_type(payment.getPaymentMethodType())
+                            .paycheck(payment.isPaycheck())
                             .build()
             );
         }
@@ -80,7 +81,7 @@ public class MypageService {
 
     public ResponseEntity<?> getMyReviews(Members member) {
 
-        List<Reviews> reviewsList = reviewRepository.findAllByMember(member);
+        List<Reviews> reviewsList = reviewRepository.findAllByMemberOrderByPostedAtDesc(member);
         List<ReviewResponseDto> reviewResponseDtoList = new ArrayList<>();
 
         for (Reviews review : reviewsList) {

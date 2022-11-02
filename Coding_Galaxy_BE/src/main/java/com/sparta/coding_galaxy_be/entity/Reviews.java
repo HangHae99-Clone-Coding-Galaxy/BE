@@ -1,7 +1,7 @@
 package com.sparta.coding_galaxy_be.entity;
 
 import com.sparta.coding_galaxy_be.dto.requestDto.ReviewRequestDto;
-import com.sparta.coding_galaxy_be.util.TimeStamped;
+import com.sparta.coding_galaxy_be.util.TimeStamp;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +14,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class Reviews extends TimeStamped {
+public class Reviews extends TimeStamp {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

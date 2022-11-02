@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface PaymentRepository extends JpaRepository<Payments, String> {
 
-    List<Payments> findAllByMember(Members member);
-    boolean existsByCourseAndMember(Courses course, Members member);
+    List<Payments> findAllByMemberOrderByCreatedAtDesc(Members member);
+    List<Payments> findAllByCourseAndMember(Courses course, Members member);
 }

@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(value={"updatedDate"}, allowGetters = true)
 
-public class TimeStamped {
+public class TimeStamp {
 
     @CreatedDate
     private LocalDateTime postedAt;

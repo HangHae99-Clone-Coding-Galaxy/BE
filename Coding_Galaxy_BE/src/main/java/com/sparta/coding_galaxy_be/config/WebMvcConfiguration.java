@@ -10,10 +10,9 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry corsRegistry){
         corsRegistry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000")
+                .allowedOrigins("http://localhost:3000", "http://43.201.75.53:8080")
                 .allowedMethods("*")
                 .exposedHeaders("Authorization", "RefreshToken")
                 .allowCredentials(true);
     }
-
 }

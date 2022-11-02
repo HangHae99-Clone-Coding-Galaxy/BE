@@ -1,7 +1,7 @@
 package com.sparta.coding_galaxy_be.entity;
 
 import com.sparta.coding_galaxy_be.dto.requestDto.CourseRequestDto;
-import com.sparta.coding_galaxy_be.util.TimeStamped;
+import com.sparta.coding_galaxy_be.util.TimeStamp;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +14,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class Courses extends TimeStamped {
+public class Courses extends TimeStamp {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,8 +27,6 @@ public class Courses extends TimeStamped {
     @Column(name = "content")
     private String content;
 
-    // imageList??
-    // 썸네일??
     @Column(name = "thumbNail")
     private String thumbNail;
 
@@ -37,14 +35,10 @@ public class Courses extends TimeStamped {
 
     @Column(name = "price")
     private int price;
-    
-    // 작성자 mapping 추가
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Members member;
-    
-    // review 양방향 처리 질문 필요
-    // 우선 단방향 처리 예정
 
     public void editCourseDetail(CourseRequestDto courseRequestDto) {
         this.title = courseRequestDto.getTitle();
