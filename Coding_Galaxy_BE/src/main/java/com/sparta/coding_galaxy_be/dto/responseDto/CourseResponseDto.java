@@ -17,6 +17,7 @@ public class CourseResponseDto {
     private double starAverage;
     private int price;
     private boolean paycheck;
-    private List<ReviewResponseDto>reviewList;
+    private List<ReviewResponseDto> reviewList;
     private Long reviewCount;
+    private List<PaymentResponseDto> paymentsList;
 }
