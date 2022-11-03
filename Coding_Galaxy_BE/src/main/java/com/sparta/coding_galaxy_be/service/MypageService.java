@@ -64,7 +64,6 @@ public class MypageService {
         for (Payments payment : paymentList) {
             paymentResponseDtoList.add(
                     PaymentResponseDto.builder()
-                            .paymentId(payment.getPaymentId())
                             .item_name(payment.getItemName())
                             .item_code(payment.getItemCode())
                             .created_at(payment.getCreatedAt())
@@ -89,7 +88,6 @@ public class MypageService {
                     ReviewResponseDto.builder()
                             .review_id(review.getReviewId())
                             .nickname(review.getMember().getNickname())
-                            .star(review.getStar())
                             .comment(review.getComment())
                             .build()
             );

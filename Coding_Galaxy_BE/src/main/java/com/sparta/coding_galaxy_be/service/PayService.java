@@ -39,7 +39,6 @@ public class PayService {
         Courses course = validation.validateCourse(courseId);
 
         Payments payment = Payments.builder()
-                .paymentId(UUID.randomUUID().toString())
                 .itemName(course.getTitle())
                 .itemCode(courseId)
                 .createdAt(DateTime.now().toString())
@@ -65,7 +64,6 @@ public class PayService {
 
         //Payment 객체 생성하여 결제 관련 정보 저장
         Payments payment = Payments.builder()
-                .paymentId(UUID.randomUUID().toString())
                 .itemName(course.getTitle())
                 .itemCode(courseId)
                 .createdAt(null)
@@ -83,7 +81,6 @@ public class PayService {
 
         MultiValueMap<String, String> httpBody = new LinkedMultiValueMap<>();
         httpBody.add("cid", "TC0ONETIME");
-        httpBody.add("partner_order_id", payment.getPaymentId());
         httpBody.add("partner_user_id", member.getNickname());
         httpBody.add("item_name", course.getTitle());
         httpBody.add("item_code", courseId.toString());
@@ -112,7 +109,6 @@ public class PayService {
         KakaoPayRequestDto kakaoPayRequestDto = KakaoPayRequestDto.builder()
                 .tid(jsonNode.get("tid").asText())
                 .next_redirect_pc_url(jsonNode.get("next_redirect_pc_url").asText())
-                .partner_order_id(payment.getPaymentId())
                 .build();
 
         paymentRepository.save(payment);

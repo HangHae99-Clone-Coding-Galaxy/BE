@@ -14,7 +14,6 @@ public class CourseResponseDto {
     private String content;
     private String thumbNail;
     private String video;
-    private double starAverage;
     private int price;
     private boolean paycheck;
     private List<ReviewResponseDto> reviewList;

@@ -12,7 +12,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         corsRegistry.addMapping("/**")
                 .allowedOrigins("http://localhost:3000", "http://localhost:3001", "http://43.201.75.53:8080")
                 .allowedMethods("*")
-                .exposedHeaders("Authorization", "RefreshToken")
-                .allowCredentials(false);
+                .exposedHeaders("Authorization", "RefreshToken", "Nickname")
+                .allowCredentials(true);
     }
 }
