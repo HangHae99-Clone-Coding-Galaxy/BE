@@ -21,9 +21,6 @@ public class Reviews extends TimeStamp {
     @Column(name = "review_id", nullable = false)
     private Long reviewId;
 
-    @Column(name = "star")
-    private Long star;
-
     @Column(name = "comment")
     private String comment;
 
@@ -36,7 +33,6 @@ public class Reviews extends TimeStamp {
     private Members member;
 
     public void updateReview(ReviewRequestDto reviewRequestDto) {
-        this.star = reviewRequestDto.getStar();
         this.comment = reviewRequestDto.getComment();
     }
 }

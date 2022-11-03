@@ -16,8 +16,9 @@ import javax.persistence.*;
 public class Payments {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "payment_id")
-    private String paymentId;
+    private Long paymentId;
 
     @Column
     private String itemName;
