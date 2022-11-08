@@ -64,7 +64,6 @@ public class CourseService {
                 .content(course.getContent())
                 .thumbNail(course.getThumbNail())
                 .video(course.getVideo())
-                .starAverage(getStarAverage(course, totalReview))
                 .price(course.getPrice())
                 .paycheck(validation.validatePaycheck(course, member))
                 .reviewList(getReviewResponseDtoList(reviewsList))
@@ -170,8 +169,8 @@ public class CourseService {
             CourseListResponseDto courseListResponseDto = CourseListResponseDto.builder()
                     .course_id(course.getCourseId())
                     .title(course.getTitle())
+                    .content(course.getContent())
                     .thumbNail(course.getThumbNail())
-                    .starAverage(getStarAverage(course, totalReview))
                     .reviewCount(totalReview)
                     .build();
 
@@ -189,26 +188,10 @@ public class CourseService {
                     ReviewResponseDto.builder()
                             .review_id(review.getReviewId())
                             .nickname(review.getMember().getNickname())
-                            .star(review.getStar())
                             .comment(review.getComment())
                             .build()
             );
         }
         return reviewResponseDtoList;
-    }
-
-    public Double getStarAverage(Courses course, Long totalReview){
-
-        Long totalStar = 0L;
-
-        List<Reviews> reviewsList = reviewRepository.findAllByCourse(course);
-        for (Reviews review : reviewsList){
-            totalStar = totalStar + review.getStar();
-        }
-
-        Double starAverage = ((double) totalStar / (double) totalReview);
-        if (totalReview == 0) starAverage = 0.0;
-
-        return starAverage;
     }
 }

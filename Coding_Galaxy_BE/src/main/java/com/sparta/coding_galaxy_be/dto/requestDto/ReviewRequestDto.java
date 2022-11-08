@@ -7,6 +7,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ReviewRequestDto {
 
-    private Long star;
     private String comment;
 }

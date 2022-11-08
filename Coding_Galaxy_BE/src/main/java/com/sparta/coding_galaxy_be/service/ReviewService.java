@@ -25,7 +25,6 @@ public class ReviewService {
         Courses course = validation.validateCourse(courseId);
 
         Reviews review = Reviews.builder()
-                .star(reviewRequestDto.getStar())
                 .comment(reviewRequestDto.getComment())
                 .member(member)
                 .course(course)

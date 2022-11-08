@@ -15,5 +15,4 @@ public interface ReviewRepository extends JpaRepository<Reviews, Long> {
     List<Reviews> findAllByCourseOrderByReviewIdDesc(Courses course);
     void deleteByCourse(Courses course);
     Long countByCourse(Courses courses);
-    List<Reviews> findTop5ByStarOrderByReviewIdDesc(Long star);
 }
