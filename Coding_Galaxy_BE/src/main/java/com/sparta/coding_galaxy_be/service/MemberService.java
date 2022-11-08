@@ -80,7 +80,11 @@ public class MemberService {
 
         refreshTokenRepository.save(refreshToken);
 
-        tokenToHeader(tokenDto, httpServletResponse, member);
+        httpServletResponse.setHeader(JwtAuthFilter.AUTHORIZATION_HEADER, JwtAuthFilter.BEARER_PREFIX + tokenDto.getAccessToken());
+        httpServletResponse.setHeader("RefreshToken", tokenDto.getRefreshToken());
+        httpServletResponse.setHeader("AccessTokenExpireTime", tokenDto.getAccessTokenExpiresIn().toString());
+        httpServletResponse.setHeader("Nickname", member.getNickname());
+        httpServletResponse.setHeader("Authority", member.getAuthority().toString());
 
         return new ResponseEntity<>("로그인 완료", HttpStatus.OK);
     }
