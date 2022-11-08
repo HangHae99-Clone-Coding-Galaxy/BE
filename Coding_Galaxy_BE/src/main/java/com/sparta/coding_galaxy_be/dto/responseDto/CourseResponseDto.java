@@ -16,7 +16,6 @@ public class CourseResponseDto {
     private String video;
     private int price;
     private boolean paycheck;
-    private List<ReviewResponseDto> reviewList;
+    private List<ReviewResponseDto>reviewList;
     private Long reviewCount;
-    private List<PaymentResponseDto> paymentsList;
 }

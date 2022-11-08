@@ -11,5 +11,4 @@ public interface PaymentRepository extends JpaRepository<Payments, String> {
 
     List<Payments> findAllByMemberOrderByCreatedAtDesc(Members member);
     List<Payments> findAllByCourseAndMember(Courses course, Members member);
-    List<Payments> findAllByCourse(Courses course);
 }

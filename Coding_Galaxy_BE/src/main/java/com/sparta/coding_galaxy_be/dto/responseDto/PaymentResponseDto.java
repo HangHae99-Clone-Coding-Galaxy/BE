@@ -15,5 +15,4 @@ public class PaymentResponseDto {
     private int amount;
     private String payment_method_type;
     private boolean paycheck;
-    private String nickname;
 }
